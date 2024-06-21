@@ -11,6 +11,7 @@ const OneYearTableTech = () => {
     customerSite: '',
     equipment: '',
     maintenanceFee: '',
+    tableTechQuantity:'',
   });
 
   const handleChange = (e) => {
@@ -38,6 +39,16 @@ const OneYearTableTech = () => {
             id="contractTerm"
             name="contractTerm"
             value="BlueVerse Table Tech 1-Year Agreement"
+            readOnly
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="tableTechCost">Equipment</label>
+          <input
+            type="text"
+            id="tableTechCost"
+            name="tableTechCost"
+            value="$20 Per Table Tech"
             readOnly
           />
         </div>
