@@ -4,6 +4,9 @@ import '../App.css';
 
 const OneYearBase = () => {
   const [formData, setFormData] = useState({
+    contractTerm: 'BlueVerse SaaS Agreement Base Package 1-Year',
+    processingFee: '3%',
+    tableTechCost: '$20 Per Table Tech',
     customerName: '',
     contactName: '',
     billingAddress: '',
@@ -12,10 +15,8 @@ const OneYearBase = () => {
     customerSiteAddress: '',
     subscriptionFee: '',
     implementationFee: '',
-    //equipment: '',
-    tableTechQuantity:'',
-    todaysDate:'',
-    customerTitle:'',
+    tableTechQuantity: '',
+    customerTitle: '',
   });
 
   const navigate = useNavigate();
@@ -30,9 +31,7 @@ const OneYearBase = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Process form submission here
-    console.log('Form submitted:', formData);
-    navigate('/signature');
+    navigate('/signature', { state: formData });
   };
 
   return (
@@ -45,7 +44,7 @@ const OneYearBase = () => {
             type="text"
             id="contractTerm"
             name="contractTerm"
-            value="BlueVerse SaaS Agreement Base Package 1-Year"
+            value={formData.contractTerm}
             readOnly
           />
         </div>
@@ -55,7 +54,7 @@ const OneYearBase = () => {
             type="text"
             id="processingFee"
             name="processingFee"
-            value="3%"
+            value={formData.processingFee}
             readOnly
           />
         </div>
@@ -65,22 +64,24 @@ const OneYearBase = () => {
             type="text"
             id="tableTechCost"
             name="tableTechCost"
-            value="$25 Per Table Tech"
+            value={formData.tableTechCost}
             readOnly
           />
         </div>
         {Object.keys(formData).map((key) => (
-          <div className="form-group" key={key}>
-            <label htmlFor={key}>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
-            <input
-              type={key === 'email' ? 'email' : key === 'phone' ? 'tel' : 'text'}
-              id={key}
-              name={key}
-              value={formData[key]}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          key !== 'contractTerm' && key !== 'processingFee' && key !== 'tableTechCost' && (
+            <div className="form-group" key={key}>
+              <label htmlFor={key}>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
+              <input
+                type={key === 'email' ? 'email' : key === 'phone' ? 'tel' : 'text'}
+                id={key}
+                name={key}
+                value={formData[key]}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          )
         ))}
         <div className="form-group">
           <input type="submit" value="Submit Order" />
