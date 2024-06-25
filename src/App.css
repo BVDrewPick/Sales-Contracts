@@ -7,7 +7,7 @@ body {
 
 .container {
   background-color: #fff;
-  padding: 20px;
+  padding: 30px;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   max-width: 600px;
@@ -58,6 +58,8 @@ button:hover {
   cursor: pointer;
   border-radius: 5px;
   padding: 10px 20px;
+  text-align: center; /* Center the text */
+  display: inline-block; /* Ensure inline-block display */
 }
 
 .form-group input[type="submit"]:hover, .form-group button:hover {
@@ -123,6 +125,7 @@ button.cancel {
   border: 2px solid #007BFF;
   width: 100px; /* Ensure the buttons have the same width */
   padding: 10px 20px;
+  text-align: center; /* Center the text */
 }
 
 button.cancel:hover {
@@ -132,4 +135,6 @@ button.cancel:hover {
 input[type="submit"] {
   width: 100px; /* Ensure the buttons have the same width */
   padding: 10px 20px;
+  text-align: center; /* Center the text */
+  display: inline-block; /* Ensure inline-block display */
 }

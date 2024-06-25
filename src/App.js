@@ -20,7 +20,7 @@ const App = () => {
                 <Link to="/1-year-base">
                   <button>BlueVerse SaaS Agreement Base Package 1-Year</button>
                 </Link>
-                <Link to="/2-year-base">
+                {/* <Link to="/2-year-base">
                   <button>BlueVerse SaaS Agreement Base Package 2-Year</button>
                 </Link>
                 <Link to="/1-year-table-tech">
@@ -28,7 +28,7 @@ const App = () => {
                 </Link>
                 <Link to="/2-year-table-tech">
                   <button>BlueVerse SaaS Agreement Table Tech 2-Year</button>
-                </Link>
+                </Link> */}
               </div>
             }
           />

@@ -17,7 +17,7 @@ const SignaturePage = () => {
     setIsChecked(e.target.checked);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formBody = new URLSearchParams();
@@ -26,25 +26,52 @@ const SignaturePage = () => {
     });
     formBody.append('signature', signature);
 
-    fetch('https://hooks.zapier.com/hooks/catch/16953346/2bhk0it/', {
-      method: 'POST',
-      body: formBody,
-    })
-      .then((response) => {
-        if (response.ok) {
-          if (parseInt(formData.tableTechQuantity, 10) > 0) {
-            window.location.href = 'https://buy.stripe.com/fZeeVH1lO3UW01O01q';
-          } else {
-            console.log('Form submitted successfully');
-            window.location.href = 'https://buy.stripe.com/cN228Vc0s4Z001O29H'
-          }
-        } else {
-          console.error('Error submitting the form');
-        }
-      })
-      .catch((error) => {
-        console.error('Error submitting the form:', error);
+    try {
+      const response = await fetch(process.env.REACT_APP_ZAPIER_HOOK_URL, {
+        method: 'POST',
+        body: formBody,
+        mode: 'no-cors',
       });
+
+      console.log('Response:', response);
+
+      const tableTechQuantity = parseInt(formData.tableTechQuantity, 10);
+      let redirectUrl = '';
+
+      switch (formData.locations) {
+        case '1 Location':
+          redirectUrl = tableTechQuantity === 1 
+            ? 'https://buy.stripe.com/fZe00Nd4wgHI01O01G' 
+            : 'https://buy.stripe.com/6oE00N5C4crsaGseWB';
+          break;
+        case '2 Locations':
+          redirectUrl = tableTechQuantity === 1 
+            ? 'https://buy.stripe.com/9AQ7tf0hKfDE9Co01J' 
+            : 'https://buy.stripe.com/3csfZL7KcezA6qccOu';
+          break;
+        case '3 Locations':
+          redirectUrl = tableTechQuantity === 1 
+            ? 'https://buy.stripe.com/7sI9Bn7KcgHI9Cog0I' 
+            : 'https://buy.stripe.com/aEUaFrggIcrsdSEbKt';
+          break;
+        case '4 Locations':
+          redirectUrl = tableTechQuantity === 1 
+            ? 'https://buy.stripe.com/3cs5l7aWogHIg0MbKw' 
+            : 'https://buy.stripe.com/bIY28V8Ogajk29W9Cp';
+          break;
+        case '5+ Locations':
+          redirectUrl = 'https://buy.stripe.com/6oE7tf4y0bno3e0g04';
+          break;
+        default:
+          console.error('Unknown location');
+          break;
+      }
+
+      window.location.href = redirectUrl;
+
+    } catch (error) {
+      console.error('Error submitting the form:', error);
+    }
   };
 
   return (
@@ -57,7 +84,6 @@ const SignaturePage = () => {
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="signature">Signature</label>
-          <label htmlFor="signature">Type your full name</label>
           <input
             type="text"
             id="signature"
