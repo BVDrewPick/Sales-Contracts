@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import './App.css';
 import { Base1YearOF } from './Images/ImageRepository';
 
@@ -7,7 +7,7 @@ const SignaturePage = () => {
   const { state: formData } = useLocation();
   const [signature, setSignature] = useState('');
   const [isChecked, setIsChecked] = useState(false);
-  const navigate = useNavigate();
+ // const navigate = useNavigate();
 
   const handleSignatureChange = (e) => {
     setSignature(e.target.value);
