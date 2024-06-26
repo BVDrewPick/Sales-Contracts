@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../App.css';
+import { BVLogo } from '../Images/ImageRepository';
 
 const OneYearBase = () => {
   const [formData, setFormData] = useState({
     contractTerm: 'BlueVerse SaaS Agreement Base Package 1-Year',
     processingFee: '3%',
     tableTechCost: '$20 Per Table Tech',
+    businessName:'',
     customerName: '',
     contactName: '',
     billingAddress: '',
@@ -117,8 +119,8 @@ const OneYearBase = () => {
     borderRadius: '5px',
     padding: '10px 20px',
     width: '100%',
-    display: 'inline-block',
     textAlign: 'center',
+    margin: '0 auto',
   };
 
   const selectStyle = {
@@ -129,8 +131,24 @@ const OneYearBase = () => {
     boxSizing: 'border-box',
   };
 
+  const descriptionStyle = {
+    color: 'grey',
+    fontSize: '12px',
+    marginTop: '5px',
+  };
+
   return (
     <div style={containerStyle}>
+      <img
+        src={BVLogo}
+        alt="Form preview"
+        style={{
+          display: 'block',
+          margin: '0 auto 20px',
+          maxWidth: '100px',
+          height: 'auto',
+        }}
+      />
       <h2>BlueVerse Base Package 1-Year Order Form</h2>
       <form onSubmit={handleSubmit}>
         <div style={formGroupStyle}>
@@ -168,6 +186,7 @@ const OneYearBase = () => {
         </div>
         <div style={formGroupStyle}>
           <label htmlFor="locations" style={labelStyle}>Locations</label>
+          <p style={descriptionStyle}>Select the number of locations.</p>
           <select
             id="locations"
             name="locations"
@@ -187,6 +206,13 @@ const OneYearBase = () => {
           key !== 'contractTerm' && key !== 'processingFee' && key !== 'tableTechCost' && key !== 'locations' && key !== 'tableTechQuantity' && key !== 'subscriptionFee' && key !== 'implementationFee' && (
             <div style={formGroupStyle} key={key}>
               <label htmlFor={key} style={labelStyle}>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
+              <p style={descriptionStyle}>
+                {key === 'contactName' ? "BlueVerse representative's name" : key === 'email' ? "Enter the customers email" : 
+                key === 'phone' ? "Enter the customers phone number" :
+                key === 'customerSiteAddress' ? "Enter the customers business site address" :
+                key === 'customerTitle' ? "Enter the contacts position in the company" :
+                key === 'billingAddress' ? "Enter the contacts billing address" : `Enter the ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}.`}
+              </p>
               <input
                 type={key === 'email' ? 'email' : key === 'phone' ? 'tel' : 'text'}
                 id={key}
@@ -201,6 +227,7 @@ const OneYearBase = () => {
         ))}
         <div style={formGroupStyle}>
           <label htmlFor="tableTechQuantity" style={labelStyle}>Table Tech Quantity</label>
+          <p style={descriptionStyle}>Enter the quantity of table tech in the order (default is the 1 complementary table tech)</p>
           <input
             type="number"
             id="tableTechQuantity"
@@ -235,11 +262,12 @@ const OneYearBase = () => {
           />
         </div>
         <div style={formGroupStyle}>
-          <input
+          <button
             type="submit"
-            value="Submit Order"
             style={submitButtonStyle}
-          />
+          >
+            Submit Order
+          </button>
         </div>
       </form>
     </div>

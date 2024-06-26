@@ -6,6 +6,7 @@ import OneYearTableTech from './contract-types/1-year-TT';
 import TwoYearBase from './contract-types/2-year-base';
 import TwoYearTableTech from './contract-types/2-year-TT';
 import SignaturePage from './SignaturePage';
+import { BVLogo } from './Images/ImageRepository';
 
 const App = () => {
   return (
@@ -16,6 +17,16 @@ const App = () => {
             path="/"
             element={
               <div>
+                <img
+                  src={BVLogo}
+                  alt="Form preview"
+                  style={{
+                    display: 'block',
+                    margin: '0 auto 20px',
+                    maxWidth: '150px',
+                    height: 'auto'
+                  }}
+                />
                 <h2>Select a Package</h2>
                 <Link to="/1-year-base">
                   <button>BlueVerse SaaS Agreement Base Package 1-Year</button>

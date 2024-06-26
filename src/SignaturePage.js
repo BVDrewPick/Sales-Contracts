@@ -7,7 +7,6 @@ const SignaturePage = () => {
   const { state: formData } = useLocation();
   const [signature, setSignature] = useState('');
   const [isChecked, setIsChecked] = useState(false);
- // const navigate = useNavigate();
 
   const handleSignatureChange = (e) => {
     setSignature(e.target.value);
@@ -107,7 +106,10 @@ const SignaturePage = () => {
         </div>
         <div className="form-group button-container">
           <button type="button" className="cancel" onClick={() => window.history.back()}>Cancel</button>
-          <input type="submit" value="Sign" />
+          <button type="submit" onClick={handleSubmit} style={{backgroundColor:'007BFF', width: '25%',   padding: '15px px',
+          border: '2px solid #007BFF',
+}
+          }>Sign</button>
         </div>
       </form>
     </div>
