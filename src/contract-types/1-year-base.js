@@ -211,7 +211,7 @@ const OneYearBase = () => {
                 key === 'phone' ? "Enter the customers phone number" :
                 key === 'customerSiteAddress' ? "Enter the customers business site address" :
                 key === 'customerTitle' ? "Enter the contacts position in the company" :
-                key === 'billingAddress' ? "Enter the contacts billing address" : `Enter the ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}.`}
+                key === 'billingAddress' ? "Enter the customers billing address" : `Enter the ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}.`}
               </p>
               <input
                 type={key === 'email' ? 'email' : key === 'phone' ? 'tel' : 'text'}
