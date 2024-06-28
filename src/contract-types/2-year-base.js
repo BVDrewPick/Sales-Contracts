@@ -16,8 +16,8 @@ const TwoYearBase = () => {
     phone: '',
     customerSiteAddress: '',
     subscriptionFee: '$85',
-    implementationFee: '$150',
-    tableTechQuantity: '1',
+    implementationFee: 150,  // Changed to number for easier calculation
+    tableTechQuantity: 1,  // Changed to number for easier calculation
     customerTitle: '',
     locations: '1 Location',
     sameAddress: false,
@@ -25,75 +25,55 @@ const TwoYearBase = () => {
 
   const navigate = useNavigate();
 
+  const calculateImplementationFee = (locations, tableTechQuantity) => {
+    let baseImplementationFee;
+    switch (locations) {
+      case '1 Location':
+        baseImplementationFee = 150;
+        break;
+      case '2 Locations':
+        baseImplementationFee = 300;
+        break;
+      case '3 Locations':
+        baseImplementationFee = 450;
+        break;
+      case '4 Locations':
+        baseImplementationFee = 600;
+        break;
+      case '5+ Locations':
+        baseImplementationFee = 750;  // Assuming special pricing, set to 0 for now
+        break;
+      default:
+        baseImplementationFee = 150;
+        break;
+    }
+    return baseImplementationFee + (tableTechQuantity - 1) * 20;
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    if (type === 'checkbox') {
-      if (name === 'sameAddress') {
-        setFormData((prevData) => ({
-          ...prevData,
-          [name]: checked,
-          customerSiteAddress: checked ? prevData.billingAddress : prevData.customerSiteAddress,
-        }));
+    setFormData((prevData) => {
+      let newFormData = { ...prevData };
+
+      if (type === 'checkbox') {
+        newFormData[name] = checked;
+        if (name === 'sameAddress') {
+          newFormData.customerSiteAddress = checked ? prevData.billingAddress : prevData.customerSiteAddress;
+        }
+      } else if (name === 'locations') {
+        newFormData[name] = value;
+        newFormData.implementationFee = calculateImplementationFee(value, prevData.tableTechQuantity);
+      } else if (name === 'tableTechQuantity') {
+        const quantity = Math.max(1, Number(value));
+        newFormData[name] = quantity;
+        newFormData.implementationFee = calculateImplementationFee(prevData.locations, quantity);
       } else {
-        setFormData((prevData) => ({
-          ...prevData,
-          [name]: checked,
-        }));
-      }
-    } else if (name === 'locations') {
-      let subscriptionFee;
-      let implementationFee;
-
-      switch (value) {
-        case '1 Location':
-          subscriptionFee = '$85';
-          implementationFee = '$150';
-          break;
-        case '2 Locations':
-          subscriptionFee = '$145';
-          implementationFee = '$300';
-          break;
-        case '3 Locations':
-          subscriptionFee = '$205';
-          implementationFee = '$450';
-          break;
-        case '4 Locations':
-          subscriptionFee = '$265';
-          implementationFee = '$600';
-          break;
-        case '5+ Locations':
-          subscriptionFee = 'Please contact a representative for Enterprise Pricing';
-          implementationFee = 'Please contact a representative for Enterprise Pricing';
-          break;
-        default:
-          subscriptionFee = '$85';
-          implementationFee = '$150';
-          break;
+        newFormData[name] = value;
       }
 
-      setFormData({
-        ...formData,
-        [name]: value,
-        subscriptionFee,
-        implementationFee,
-      });
-    } else if (name === 'tableTechQuantity') {
-      const quantity = Math.max(1, value);
-      const additionalTableTechCost = (quantity - 1) * 20;
-      const newImplementationFee = 150 + additionalTableTechCost;
-
-      setFormData({
-        ...formData,
-        [name]: quantity,
-        implementationFee: `$${newImplementationFee}`,
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
-    }
+      return newFormData;
+    });
   };
 
   const handleSubmit = (e) => {
@@ -247,7 +227,7 @@ const TwoYearBase = () => {
             </div>
           )
         ))}
-                <div style={formGroupStyle}>
+        <div style={formGroupStyle}>
           <label htmlFor="billingAddress" style={labelStyle}>Billing Address</label>
           <p style={descriptionStyle}>Enter the customer's billing address.</p>
           <input
@@ -281,7 +261,6 @@ const TwoYearBase = () => {
               id="sameAddress"
               name="sameAddress"
               checked={formData.sameAddress}
-              
               onChange={handleChange}
             /> Same as Billing Address
           </label>
@@ -317,7 +296,7 @@ const TwoYearBase = () => {
             type="text"
             id="implementationFee"
             name="implementationFee"
-            value={formData.implementationFee}
+            value={`$${formData.implementationFee}`}
             readOnly
             style={readOnlyInputStyle}
           />
