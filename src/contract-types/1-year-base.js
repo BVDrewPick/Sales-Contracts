@@ -8,7 +8,7 @@ const OneYearBase = () => {
     contractTerm: 'BlueVerse SaaS Agreement Base Package 1-Year',
     processingFee: '3%',
     tableTechCost: '$20 Per Table Tech',
-    businessName:'',
+    businessName: '',
     customerName: '',
     contactName: '',
     billingAddress: '',
@@ -20,14 +20,28 @@ const OneYearBase = () => {
     tableTechQuantity: '1',
     customerTitle: '',
     locations: '1 Location',
+    sameAddress: false,
   });
 
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
 
-    if (name === 'locations') {
+    if (type === 'checkbox') {
+      if (name === 'sameAddress') {
+        setFormData((prevData) => ({
+          ...prevData,
+          [name]: checked,
+          customerSiteAddress: checked ? prevData.billingAddress : prevData.customerSiteAddress,
+        }));
+      } else {
+        setFormData((prevData) => ({
+          ...prevData,
+          [name]: checked,
+        }));
+      }
+    } else if (name === 'locations') {
       let subscriptionFee;
       let implementationFee;
 
@@ -64,10 +78,20 @@ const OneYearBase = () => {
         subscriptionFee,
         implementationFee,
       });
+    } else if (name === 'tableTechQuantity') {
+      const quantity = Math.max(1, value);
+      const additionalTableTechCost = (quantity - 1) * 20;
+      const newImplementationFee = 150 + additionalTableTechCost;
+
+      setFormData({
+        ...formData,
+        [name]: quantity,
+        implementationFee: `$${newImplementationFee}`,
+      });
     } else {
       setFormData({
         ...formData,
-        [name]: name === 'tableTechQuantity' ? Math.max(1, value) : value,
+        [name]: value,
       });
     }
   };
@@ -203,15 +227,13 @@ const OneYearBase = () => {
           </select>
         </div>
         {Object.keys(formData).map((key) => (
-          key !== 'contractTerm' && key !== 'processingFee' && key !== 'tableTechCost' && key !== 'locations' && key !== 'tableTechQuantity' && key !== 'subscriptionFee' && key !== 'implementationFee' && (
+          key !== 'contractTerm' && key !== 'processingFee' && key !== 'tableTechCost' && key !== 'locations' && key !== 'billingAddress' && key !== 'customerSiteAddress' && key !== 'tableTechQuantity' && key !== 'subscriptionFee' && key !== 'implementationFee' && key !== 'sameAddress' && (
             <div style={formGroupStyle} key={key}>
               <label htmlFor={key} style={labelStyle}>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
               <p style={descriptionStyle}>
-                {key === 'contactName' ? "BlueVerse representative's name" : key === 'email' ? "Enter the customers email" : 
-                key === 'phone' ? "Enter the customers phone number" :
-                key === 'customerSiteAddress' ? "Enter the customers business site address" :
-                key === 'customerTitle' ? "Enter the contacts position in the company" :
-                key === 'billingAddress' ? "Enter the customers billing address" : `Enter the ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}.`}
+                {key === 'contactName' ? "BlueVerse representative's name" : key === 'email' ? "Enter the customer's email" : 
+                key === 'phone' ? "Enter the customer's phone number" :
+                key === 'customerTitle' ? "Enter the contact's position in the company" : `Enter the ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}.`}
               </p>
               <input
                 type={key === 'email' ? 'email' : key === 'phone' ? 'tel' : 'text'}
@@ -225,9 +247,48 @@ const OneYearBase = () => {
             </div>
           )
         ))}
+                <div style={formGroupStyle}>
+          <label htmlFor="billingAddress" style={labelStyle}>Billing Address</label>
+          <p style={descriptionStyle}>Enter the customer's billing address.</p>
+          <input
+            type="text"
+            id="billingAddress"
+            name="billingAddress"
+            value={formData.billingAddress}
+            onChange={handleChange}
+            required
+            style={inputStyle}
+          />
+        </div>
+        <div style={formGroupStyle}>
+          <label htmlFor="customerSiteAddress" style={labelStyle}>Customer Site Address</label>
+          <p style={descriptionStyle}>Enter the customer's business site address.</p>
+          <input
+            type="text"
+            id="customerSiteAddress"
+            name="customerSiteAddress"
+            value={formData.sameAddress ? formData.billingAddress : formData.customerSiteAddress}
+            onChange={handleChange}
+            required
+            style={inputStyle}
+            readOnly={formData.sameAddress}
+          />
+        </div>
+        <div style={formGroupStyle}>
+          <label htmlFor="sameAddress" style={labelStyle}>
+            <input
+              type="checkbox"
+              id="sameAddress"
+              name="sameAddress"
+              checked={formData.sameAddress}
+              
+              onChange={handleChange}
+            /> Same as Billing Address
+          </label>
+        </div>
         <div style={formGroupStyle}>
           <label htmlFor="tableTechQuantity" style={labelStyle}>Table Tech Quantity</label>
-          <p style={descriptionStyle}>Enter the quantity of table tech in the order (default is the 1 complementary table tech)</p>
+          <p style={descriptionStyle}>Enter the quantity of table tech in the order (default is the 1 complementary table tech).</p>
           <input
             type="number"
             id="tableTechQuantity"
