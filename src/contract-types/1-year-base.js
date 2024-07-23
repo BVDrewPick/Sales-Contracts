@@ -134,6 +134,16 @@ const OneYearBase = () => {
     }
   };
 
+  const getTermsOfServiceLink = (contractTerm) => {
+    if (contractTerm === 'Base Package 1-Year') {
+      return 'https://docs.google.com/document/d/e/2PACX-1vRbxJaaE_ijGbyGv24WtwhtVlFsDMK3puYRuy9eQQEWdlh3dmkD4Dh7zAeBfLdsnbrKjOzrs_l2__n_/pub';
+    } else if (contractTerm === 'Base Package 2-Year') {
+      return 'https://docs.google.com/document/d/e/2PACX-1vS_K3etw5LsuPyDwHuedCQrrx40ZncMhNNoxS4Ax9gJY5urNAskKmMWzOAUTaytwOoZUTaHUUCof18X/pub';
+    } else {
+      return '#';
+    }
+  };
+
   const containerStyle = {
     backgroundColor: '#fff',
     padding: '30px',
@@ -317,7 +327,7 @@ const OneYearBase = () => {
               checked={formData.isChecked}
               onChange={handleChange}
               required
-            /> I Agree to The <a href="https://docs.google.com/document/d/e/2PACX-1vRbxJaaE_ijGbyGv24WtwhtVlFsDMK3puYRuy9eQQEWdlh3dmkD4Dh7zAeBfLdsnbrKjOzrs_l2__n_/pub" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+            /> I Agree to The <a href={getTermsOfServiceLink(formData.contractTerm)} target="_blank" rel="noopener noreferrer">Terms of Service</a>
           </label>
         </div>
         <div style={formGroupStyle}>
