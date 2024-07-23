@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-//import { useNavigate } from 'react-router-dom';
 import '../App.css';
 import { BVLogo } from '../Images/ImageRepository';
 
@@ -16,15 +15,13 @@ const OneYearBase = () => {
     phone: '',
     customerSiteAddress: '',
     subscriptionFee: '85',
-    implementationFee: 150, 
-    tableTechQuantity: 1, 
+    implementationFee: 150,
+    tableTechQuantity: 1,
     customerTitle: '',
     locations: '1 Location',
     sameAddress: false,
     isChecked: false
   });
-
- // const navigate = useNavigate();
 
   const calculateImplementationFee = (locations, tableTechQuantity) => {
     let baseImplementationFee;
@@ -60,7 +57,7 @@ const OneYearBase = () => {
       if (type === 'checkbox') {
         newFormData[name] = checked;
         if (name === 'sameAddress') {
-          newFormData.customerSiteAddress = checked ? prevData.billingAddress : prevData.customerSiteAddress;
+          newFormData.billingAddress = checked ? prevData.customerSiteAddress : '';
         }
       } else if (name === 'locations') {
         newFormData[name] = value;
@@ -221,7 +218,8 @@ const OneYearBase = () => {
           height: 'auto',
         }}
       />
-      <h2>BlueVerse Order Form</h2>
+      <h2>Welcome to BlueVerse!</h2>
+      <p>Account Information</p>
       <form onSubmit={handleSubmit}>
         <div style={formGroupStyle}>
           <label htmlFor="contractTerm" style={labelStyle}>Contract Term</label>
@@ -257,7 +255,7 @@ const OneYearBase = () => {
         </div>
         <div style={formGroupStyle}>
           <label htmlFor="customerName" style={labelStyle}>First and Last Name</label>
-          <p style={descriptionStyle}>Enter your first and last name here.</p>
+          <p style={descriptionStyle}>Enter your first and last name.</p>
           <input
             type="text"
             id="customerName"
@@ -268,8 +266,21 @@ const OneYearBase = () => {
             style={inputStyle}
           />
         </div>
+        <div style={formGroupStyle}>
+          <label htmlFor="businessName" style={labelStyle}>Business Name</label>
+          <p style={descriptionStyle}>Enter the name of your business.</p>
+          <input
+            type="text"
+            id="businessName"
+            name="businessName"
+            value={formData.businessName}
+            onChange={handleChange}
+            required
+            style={inputStyle}
+          />
+        </div>
         {Object.keys(formData).map((key) => (
-          key !== 'contractTerm' && key !== 'processingFee' && key !== 'tableTechCost' && key !== 'locations' && key !== 'billingAddress' && key !== 'customerSiteAddress' && key !== 'tableTechQuantity' && key !== 'subscriptionFee' && key !== 'implementationFee' && key !== 'sameAddress' && key !== 'isChecked' && key !== 'customerName' && (
+          key !== 'contractTerm' && key !== 'processingFee' && key !== 'tableTechCost' && key !== 'locations' && key !== 'billingAddress' && key !== 'customerSiteAddress' && key !== 'tableTechQuantity' && key !== 'subscriptionFee' && key !== 'implementationFee' && key !== 'sameAddress' && key !== 'isChecked' && key !== 'customerName' && key !== 'businessName' && key !== 'contactName' && key !== 'customerTitle' &&(
             <div style={formGroupStyle} key={key}>
               <label htmlFor={key} style={labelStyle}>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
               <p style={descriptionStyle}>
@@ -290,26 +301,39 @@ const OneYearBase = () => {
           )
         ))}
         <div style={formGroupStyle}>
-          <label htmlFor="billingAddress" style={labelStyle}>Billing Address</label>
-          <p style={descriptionStyle}>Enter the customer's billing address.</p>
+          <label htmlFor="customerTitle" style={labelStyle}>Position</label>
+          <p style={descriptionStyle}>Enter your position at the company. Eg. Owner</p>
           <input
             type="text"
-            id="billingAddress"
-            name="billingAddress"
-            value={formData.billingAddress}
+            id="customerTitle"
+            name="customerTitle"
+            value={formData.customerTitle}
             onChange={handleChange}
             required
             style={inputStyle}
           />
         </div>
         <div style={formGroupStyle}>
-          <label htmlFor="customerSiteAddress" style={labelStyle}>Customer Site Address</label>
-          <p style={descriptionStyle}>Enter the customer's business site address.</p>
+          <label htmlFor="customerSiteAddress" style={labelStyle}>Business Address</label>
+          <p style={descriptionStyle}>Enter the address of the business your using for BlueVerse.</p>
           <input
             type="text"
             id="customerSiteAddress"
             name="customerSiteAddress"
-            value={formData.sameAddress ? formData.billingAddress : formData.customerSiteAddress}
+            value={formData.customerSiteAddress}
+            onChange={handleChange}
+            required
+            style={inputStyle}
+          />
+        </div>
+        <div style={formGroupStyle}>
+          <label htmlFor="billingAddress" style={labelStyle}>Billing Address</label>
+          <p style={descriptionStyle}>Enter your billing address.</p>
+          <input
+            type="text"
+            id="billingAddress"
+            name="billingAddress"
+            value={formData.sameAddress ? formData.customerSiteAddress : formData.billingAddress}
             onChange={handleChange}
             required
             style={inputStyle}
@@ -324,7 +348,7 @@ const OneYearBase = () => {
               name="sameAddress"
               checked={formData.sameAddress}
               onChange={handleChange}
-            /> Same as Billing Address
+            /> Same as Business Address
           </label>
         </div>
         <div style={formGroupStyle}>
@@ -342,7 +366,19 @@ const OneYearBase = () => {
             style={inputStyle}
           />
         </div>
-
+        <div style={formGroupStyle}>
+          <label htmlFor="contactName" style={labelStyle}>How Did You Hear About Us?</label>
+          <p style={descriptionStyle}>Eg. BlueVerse Sales Representative: "Jordan K."</p>
+          <input
+            type="text"
+            id="contactName"
+            name="contactName"
+            value={formData.contactName}
+            onChange={handleChange}
+            required
+            style={inputStyle}
+          />
+        </div>
         <div style={formGroupStyle}>
           <label htmlFor="isChecked" style={labelStyle}>
             <input
