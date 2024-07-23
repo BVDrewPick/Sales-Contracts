@@ -232,7 +232,7 @@ const OneYearBase = () => {
             style={selectStyle}
           >
             <option value="Base Package 1-Year">BlueVerse Access 1-Year</option>
-            <option value="Base Package 2-Year">VlueVerse Access 2-Year</option>
+            <option value="Base Package 2-Year">BlueVerse Access 2-Year</option>
           </select>
         </div>
         <div style={formGroupStyle}>
