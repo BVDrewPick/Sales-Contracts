@@ -8,8 +8,8 @@ const OneYearBase = () => {
     contractTerm: 'Base Package 1-Year',
     processingFee: '3%',
     tableTechCost: '20',
-    businessName: '',
     customerName: '',
+    businessName: '',
     contactName: '',
     billingAddress: '',
     email: '',
@@ -67,7 +67,7 @@ const OneYearBase = () => {
         newFormData.implementationFee = calculateImplementationFee(value, prevData.tableTechQuantity);
       } else if (name === 'tableTechQuantity') {
         const quantity = Math.max(1, Number(value));
-        newFormData[name] = quantity;
+        newFormData[name] = value ? quantity : value; // Keep the value if it's not empty
         newFormData.implementationFee = calculateImplementationFee(prevData.locations, quantity);
       } else {
         newFormData[name] = value;
@@ -75,6 +75,17 @@ const OneYearBase = () => {
 
       return newFormData;
     });
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    if (name === 'tableTechQuantity' && !value) {
+      setFormData((prevData) => ({
+        ...prevData,
+        tableTechQuantity: 1,
+        implementationFee: calculateImplementationFee(prevData.locations, 1)
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -244,8 +255,21 @@ const OneYearBase = () => {
             <option value="5+ Locations">5+ Locations</option>
           </select>
         </div>
+        <div style={formGroupStyle}>
+          <label htmlFor="customerName" style={labelStyle}>First and Last Name</label>
+          <p style={descriptionStyle}>Enter your first and last name here.</p>
+          <input
+            type="text"
+            id="customerName"
+            name="customerName"
+            value={formData.customerName}
+            onChange={handleChange}
+            required
+            style={inputStyle}
+          />
+        </div>
         {Object.keys(formData).map((key) => (
-          key !== 'contractTerm' && key !== 'processingFee' && key !== 'tableTechCost' && key !== 'locations' && key !== 'billingAddress' && key !== 'customerSiteAddress' && key !== 'tableTechQuantity' && key !== 'subscriptionFee' && key !== 'implementationFee' && key !== 'sameAddress' && key !== 'isChecked' && (
+          key !== 'contractTerm' && key !== 'processingFee' && key !== 'tableTechCost' && key !== 'locations' && key !== 'billingAddress' && key !== 'customerSiteAddress' && key !== 'tableTechQuantity' && key !== 'subscriptionFee' && key !== 'implementationFee' && key !== 'sameAddress' && key !== 'isChecked' && key !== 'customerName' && (
             <div style={formGroupStyle} key={key}>
               <label htmlFor={key} style={labelStyle}>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
               <p style={descriptionStyle}>
@@ -312,6 +336,7 @@ const OneYearBase = () => {
             name="tableTechQuantity"
             value={formData.tableTechQuantity}
             onChange={handleChange}
+            onBlur={handleBlur}
             min="1"
             required
             style={inputStyle}
@@ -335,7 +360,7 @@ const OneYearBase = () => {
             type="submit"
             style={submitButtonStyle}
           >
-            Submit Order
+            Continue to Payment!
           </button>
         </div>
 
