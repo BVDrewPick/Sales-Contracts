@@ -4,7 +4,7 @@ import { BVLogo } from '../Images/ImageRepository';
 
 const OneYearBase = () => {
   const [formData, setFormData] = useState({
-    contractTerm: 'Base Package 1-Year',
+    contractTerm: 'Blueverse Access 1-Year',
     processingFee: '3%',
     tableTechCost: '20',
     customerName: '',
@@ -231,8 +231,8 @@ const OneYearBase = () => {
             required
             style={selectStyle}
           >
-            <option value="Base Package 1-Year">Base Package 1-Year</option>
-            <option value="Base Package 2-Year">Base Package 2-Year</option>
+            <option value="Base Package 1-Year">BlueVerse Access 1-Year</option>
+            <option value="Base Package 2-Year">VlueVerse Access 2-Year</option>
           </select>
         </div>
         <div style={formGroupStyle}>
