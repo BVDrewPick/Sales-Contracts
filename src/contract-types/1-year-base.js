@@ -284,8 +284,8 @@ const OneYearBase = () => {
             <div style={formGroupStyle} key={key}>
               <label htmlFor={key} style={labelStyle}>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
               <p style={descriptionStyle}>
-                {key === 'contactName' ? "BlueVerse representative's name" : key === 'email' ? "Enter the customer's email" : 
-                key === 'phone' ? "Enter the customer's phone number" :
+                {key === 'contactName' ? "BlueVerse representative's name" : key === 'email' ? "Enter your email" : 
+                key === 'phone' ? "Enter your phone number" :
                 key === 'customerTitle' ? "Enter the contact's position in the company" : `Enter the ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}.`}
               </p>
               <input
