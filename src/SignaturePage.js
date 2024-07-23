@@ -24,6 +24,7 @@ const SignaturePage = () => {
       formBody.append(key, formData[key]);
     });
     formBody.append('signature', signature);
+    formBody.append('submissionDateTime', new Date().toISOString());
 
     try {
       const response = await fetch(process.env.REACT_APP_ZAPIER_HOOK_URL, {
@@ -106,10 +107,9 @@ const SignaturePage = () => {
         </div>
         <div className="form-group button-container">
           <button type="button" className="cancel" onClick={() => window.history.back()}>Cancel</button>
-          <button type="submit" onClick={handleSubmit} style={{backgroundColor:'007BFF', width: '25%',   padding: '15px px',
-          border: '2px solid #007BFF',
-}
-          }>Sign</button>
+          <button type="submit" onClick={handleSubmit} style={{backgroundColor: '#007BFF', width: '25%', padding: '15px', border: '2px solid #007BFF'}}>
+            Sign
+          </button>
         </div>
       </form>
     </div>

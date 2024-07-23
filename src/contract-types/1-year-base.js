@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
 import '../App.css';
 import { BVLogo } from '../Images/ImageRepository';
 
 const OneYearBase = () => {
   const [formData, setFormData] = useState({
-    contractTerm: 'BlueVerse SaaS Agreement Base Package 1-Year',
+    contractTerm: 'Base Package 1-Year',
     processingFee: '3%',
-    tableTechCost: '$20 Per Table Tech',
+    tableTechCost: '20',
     businessName: '',
     customerName: '',
     contactName: '',
@@ -15,15 +15,16 @@ const OneYearBase = () => {
     email: '',
     phone: '',
     customerSiteAddress: '',
-    subscriptionFee: '$85',
-    implementationFee: 150,  // Changed to number for easier calculation
-    tableTechQuantity: 1,  // Changed to number for easier calculation
+    subscriptionFee: '85',
+    implementationFee: 150, 
+    tableTechQuantity: 1, 
     customerTitle: '',
     locations: '1 Location',
     sameAddress: false,
+    isChecked: false
   });
 
-  const navigate = useNavigate();
+ // const navigate = useNavigate();
 
   const calculateImplementationFee = (locations, tableTechQuantity) => {
     let baseImplementationFee;
@@ -76,9 +77,61 @@ const OneYearBase = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate('/signature', { state: formData });
+
+    const formBody = new URLSearchParams();
+    Object.keys(formData).forEach((key) => {
+      formBody.append(key, formData[key]);
+    });
+    formBody.append('submissionDateTime', new Date().toISOString());
+
+    try {
+      const response = await fetch(process.env.REACT_APP_ZAPIER_HOOK_URL, {
+        method: 'POST',
+        body: formBody,
+        mode: 'no-cors',
+      });
+
+      console.log('Response:', response);
+
+      const tableTechQuantity = parseInt(formData.tableTechQuantity, 10);
+      let redirectUrl = '';
+
+      switch (formData.locations) {
+        case '1 Location':
+          redirectUrl = tableTechQuantity === 1 
+            ? 'https://buy.stripe.com/fZe00Nd4wgHI01O01G' 
+            : 'https://buy.stripe.com/6oE00N5C4crsaGseWB';
+          break;
+        case '2 Locations':
+          redirectUrl = tableTechQuantity === 1 
+            ? 'https://buy.stripe.com/9AQ7tf0hKfDE9Co01J' 
+            : 'https://buy.stripe.com/3csfZL7KcezA6qccOu';
+          break;
+        case '3 Locations':
+          redirectUrl = tableTechQuantity === 1 
+            ? 'https://buy.stripe.com/7sI9Bn7KcgHI9Cog0I' 
+            : 'https://buy.stripe.com/aEUaFrggIcrsdSEbKt';
+          break;
+        case '4 Locations':
+          redirectUrl = tableTechQuantity === 1 
+            ? 'https://buy.stripe.com/3cs5l7aWogHIg0MbKw' 
+            : 'https://buy.stripe.com/bIY28V8Ogajk29W9Cp';
+          break;
+        case '5+ Locations':
+          redirectUrl = 'https://buy.stripe.com/6oE7tf4y0bno3e0g04';
+          break;
+        default:
+          console.error('Unknown location');
+          break;
+      }
+
+      window.location.href = redirectUrl;
+
+    } catch (error) {
+      console.error('Error submitting the form:', error);
+    }
   };
 
   const containerStyle = {
@@ -107,12 +160,6 @@ const OneYearBase = () => {
     border: '1px solid #ccc',
     borderRadius: '5px',
     boxSizing: 'border-box',
-  };
-
-  const readOnlyInputStyle = {
-    ...inputStyle,
-    backgroundColor: '#e9ecef',
-    color: '#6c757d',
   };
 
   const submitButtonStyle = {
@@ -153,40 +200,21 @@ const OneYearBase = () => {
           height: 'auto',
         }}
       />
-      <h2>BlueVerse Base Package 1-Year Order Form</h2>
+      <h2>BlueVerse Order Form</h2>
       <form onSubmit={handleSubmit}>
         <div style={formGroupStyle}>
           <label htmlFor="contractTerm" style={labelStyle}>Contract Term</label>
-          <input
-            type="text"
+          <select
             id="contractTerm"
             name="contractTerm"
             value={formData.contractTerm}
-            readOnly
-            style={readOnlyInputStyle}
-          />
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="processingFee" style={labelStyle}>Processing Fee</label>
-          <input
-            type="text"
-            id="processingFee"
-            name="processingFee"
-            value={formData.processingFee}
-            readOnly
-            style={readOnlyInputStyle}
-          />
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="tableTechCost" style={labelStyle}>Equipment</label>
-          <input
-            type="text"
-            id="tableTechCost"
-            name="tableTechCost"
-            value={formData.tableTechCost}
-            readOnly
-            style={readOnlyInputStyle}
-          />
+            onChange={handleChange}
+            required
+            style={selectStyle}
+          >
+            <option value="Base Package 1-Year">Base Package 1-Year</option>
+            <option value="Base Package 2-Year">Base Package 2-Year</option>
+          </select>
         </div>
         <div style={formGroupStyle}>
           <label htmlFor="locations" style={labelStyle}>Locations</label>
@@ -207,7 +235,7 @@ const OneYearBase = () => {
           </select>
         </div>
         {Object.keys(formData).map((key) => (
-          key !== 'contractTerm' && key !== 'processingFee' && key !== 'tableTechCost' && key !== 'locations' && key !== 'billingAddress' && key !== 'customerSiteAddress' && key !== 'tableTechQuantity' && key !== 'subscriptionFee' && key !== 'implementationFee' && key !== 'sameAddress' && (
+          key !== 'contractTerm' && key !== 'processingFee' && key !== 'tableTechCost' && key !== 'locations' && key !== 'billingAddress' && key !== 'customerSiteAddress' && key !== 'tableTechQuantity' && key !== 'subscriptionFee' && key !== 'implementationFee' && key !== 'sameAddress' && key !== 'isChecked' && (
             <div style={formGroupStyle} key={key}>
               <label htmlFor={key} style={labelStyle}>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
               <p style={descriptionStyle}>
@@ -279,27 +307,18 @@ const OneYearBase = () => {
             style={inputStyle}
           />
         </div>
+
         <div style={formGroupStyle}>
-          <label htmlFor="subscriptionFee" style={labelStyle}>Subscription Fee</label>
-          <input
-            type="text"
-            id="subscriptionFee"
-            name="subscriptionFee"
-            value={formData.subscriptionFee}
-            readOnly
-            style={readOnlyInputStyle}
-          />
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="implementationFee" style={labelStyle}>Implementation Fee</label>
-          <input
-            type="text"
-            id="implementationFee"
-            name="implementationFee"
-            value={`$${formData.implementationFee}`}
-            readOnly
-            style={readOnlyInputStyle}
-          />
+          <label htmlFor="isChecked" style={labelStyle}>
+            <input
+              type="checkbox"
+              id="isChecked"
+              name="isChecked"
+              checked={formData.isChecked}
+              onChange={handleChange}
+              required
+            /> I agree to the Terms of Service.
+          </label>
         </div>
         <div style={formGroupStyle}>
           <button
@@ -309,6 +328,11 @@ const OneYearBase = () => {
             Submit Order
           </button>
         </div>
+
+        <input type="hidden" name="processingFee" value={formData.processingFee} />
+        <input type="hidden" name="tableTechCost" value={formData.tableTechCost} />
+        <input type="hidden" name="subscriptionFee" value={formData.subscriptionFee} />
+        <input type="hidden" name="implementationFee" value={formData.implementationFee} />
       </form>
     </div>
   );

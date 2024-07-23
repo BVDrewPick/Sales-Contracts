@@ -5,7 +5,7 @@ import { BVLogo } from '../Images/ImageRepository';
 
 const TwoYearBase = () => {
   const [formData, setFormData] = useState({
-    contractTerm: 'BlueVerse SaaS Agreement Base Package 2-Year',
+    contractTerm: 'Base Package 2-Year',
     processingFee: '3%',
     tableTechCost: '$20 Per Table Tech',
     businessName: '',
@@ -15,7 +15,7 @@ const TwoYearBase = () => {
     email: '',
     phone: '',
     customerSiteAddress: '',
-    subscriptionFee: '$85',
+    subscriptionFee: '85',
     implementationFee: 150,  // Changed to number for easier calculation
     tableTechQuantity: 1,  // Changed to number for easier calculation
     customerTitle: '',
@@ -41,7 +41,7 @@ const TwoYearBase = () => {
         baseImplementationFee = 600;
         break;
       case '5+ Locations':
-        baseImplementationFee = 750;  // Assuming special pricing, set to 0 for now
+        baseImplementationFee = 750;  
         break;
       default:
         baseImplementationFee = 150;
@@ -296,7 +296,7 @@ const TwoYearBase = () => {
             type="text"
             id="implementationFee"
             name="implementationFee"
-            value={`$${formData.implementationFee}`}
+            value={`${formData.implementationFee}`}
             readOnly
             style={readOnlyInputStyle}
           />
