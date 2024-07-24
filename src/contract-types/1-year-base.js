@@ -380,7 +380,6 @@ const OneYearBase = () => {
             name="contactName"
             value={formData.contactName}
             onChange={handleChange}
-            required
             style={inputStyle}
           />
         </div>
