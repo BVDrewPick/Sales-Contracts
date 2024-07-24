@@ -103,6 +103,11 @@ const OneYearBase = () => {
 
       console.log('Response:', response);
 
+      // Google Ads Conversion Tracking
+      window.gtag('event', 'conversion', {
+        send_to: 'AW-16635514632/izEiCI64ksUZEIiet_w9', // Replace with your conversion ID and label
+      });
+
       const tableTechQuantity = parseInt(formData.tableTechQuantity, 10);
       let redirectUrl = '';
 
@@ -280,7 +285,7 @@ const OneYearBase = () => {
           />
         </div>
         {Object.keys(formData).map((key) => (
-          key !== 'contractTerm' && key !== 'processingFee' && key !== 'tableTechCost' && key !== 'locations' && key !== 'billingAddress' && key !== 'customerSiteAddress' && key !== 'tableTechQuantity' && key !== 'subscriptionFee' && key !== 'implementationFee' && key !== 'sameAddress' && key !== 'isChecked' && key !== 'customerName' && key !== 'businessName' && key !== 'contactName' && key !== 'customerTitle' &&(
+          key !== 'contractTerm' && key !== 'processingFee' && key !== 'tableTechCost' && key !== 'locations' && key !== 'billingAddress' && key !== 'customerSiteAddress' && key !== 'tableTechQuantity' && key !== 'subscriptionFee' && key !== 'implementationFee' && key !== 'sameAddress' && key !== 'isChecked' && key !== 'customerName' && key !== 'businessName' && key !== 'contactName' && key !== 'customerTitle' && (
             <div style={formGroupStyle} key={key}>
               <label htmlFor={key} style={labelStyle}>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
               <p style={descriptionStyle}>
