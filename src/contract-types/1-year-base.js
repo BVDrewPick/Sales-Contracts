@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../App.css';
 import { BVLogo } from '../Images/ImageRepository';
 
 const OneYearBase = () => {
   const [formData, setFormData] = useState({
-    contractTerm: 'Blueverse Access 1-Year',
+    contractTerm: 'BlueVerse Access 1-Year',
     processingFee: '3%',
     tableTechCost: '20',
     customerName: '',
@@ -22,6 +22,10 @@ const OneYearBase = () => {
     sameAddress: false,
     isChecked: false
   });
+
+  useEffect(() => {
+    console.log('FormData on mount or update:', formData);
+  }, [formData]);
 
   const calculateImplementationFee = (locations, tableTechQuantity) => {
     let baseImplementationFee;
@@ -148,9 +152,9 @@ const OneYearBase = () => {
   };
 
   const getTermsOfServiceLink = (contractTerm) => {
-    if (contractTerm === 'Base Package 1-Year') {
+    if (contractTerm === 'BlueVerse Access 1-Year') {
       return 'https://docs.google.com/document/d/e/2PACX-1vRbxJaaE_ijGbyGv24WtwhtVlFsDMK3puYRuy9eQQEWdlh3dmkD4Dh7zAeBfLdsnbrKjOzrs_l2__n_/pub';
-    } else if (contractTerm === 'Base Package 2-Year') {
+    } else if (contractTerm === 'BlueVerse Access 2-Year') {
       return 'https://docs.google.com/document/d/e/2PACX-1vS_K3etw5LsuPyDwHuedCQrrx40ZncMhNNoxS4Ax9gJY5urNAskKmMWzOAUTaytwOoZUTaHUUCof18X/pub';
     } else {
       return '#';
@@ -236,8 +240,8 @@ const OneYearBase = () => {
             required
             style={selectStyle}
           >
-            <option value="Base Package 1-Year">BlueVerse Access 1-Year</option>
-            <option value="Base Package 2-Year">BlueVerse Access 2-Year</option>
+            <option value="BlueVerse Access 1-Year">BlueVerse Access 1-Year</option>
+            <option value="BlueVerse Access 2-Year">BlueVerse Access 2-Year</option>
           </select>
         </div>
         <div style={formGroupStyle}>
