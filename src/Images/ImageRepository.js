@@ -11,8 +11,9 @@ import Menu from './content/MENU.png'
 import scootersMenu from './content/MenuScooters.png'
 import OrderHere from './content/OrderHere.png'
 import ReviewUs from './content/REVIEW.png'
-
+import GenericLogoTemplate from './content/GenericLogoTemplate.png'
+import MenuTemplate from './content/MenuTemplate.png'
 
 
 export {Base1YearOF, BVLogo, POSButton, POSButtonTableNumber, CallServer, CheckIn, dealWithTableNumber, dealsWithOutTableNumber,
-InstagramFollow, Menu, scootersMenu, OrderHere, ReviewUs};
+InstagramFollow, Menu, scootersMenu, OrderHere, ReviewUs, GenericLogoTemplate, MenuTemplate};
