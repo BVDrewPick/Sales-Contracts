@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MenuTemplate, GenericLogoTemplate } from '../Images/ImageRepository';
+
 
 // ContactFormQ5 Component
 export function ContactFormQ5() {

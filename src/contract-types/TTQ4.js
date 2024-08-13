@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MenuTemplate, GenericLogoTemplate } from '../Images/ImageRepository';
+
 
 // ContactFormQ4 Component
 export function ContactFormQ4() {
