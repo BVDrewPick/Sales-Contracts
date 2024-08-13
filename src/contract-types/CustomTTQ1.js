@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-//import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { MenuTemplate, GenericLogoTemplate } from '../Images/ImageRepository';
 
 const buttonStyle = {
@@ -60,7 +59,6 @@ export function ReactStickerDesigner() {
     const [designMode, setDesignMode] = useState("custom");
     const canvasRef = useRef(null);
     const containerRef = useRef(null);
-    //const navigate = useNavigate();
 
     const circleDiameter = 1400;
     const fixedZoom = 0.2;
@@ -71,7 +69,7 @@ export function ReactStickerDesigner() {
         "Trebuchet MS", "Arial Black", "Impact"
     ];
 
-    const templateDesigns = {
+    const templateDesigns = useMemo(() => ({
         template1: {
             circleColor: "#e61d2f",
             elements: [
@@ -190,24 +188,21 @@ export function ReactStickerDesigner() {
                 },
             ],
         },
-    };
+    }), []);
 
     const loadTemplate = useCallback((template) => {
-        console.log(`Loading template: ${template}`);
         setCircleColor(templateDesigns[template].circleColor);
         setElements(templateDesigns[template].elements);
         setDesignMode(template);
-    }, []);
+    }, [templateDesigns]);
 
     const startCustomDesign = useCallback(() => {
-        console.log("Starting custom design");
         setCircleColor("#ffffff");
         setElements([]);
         setDesignMode("custom");
     }, []);
 
     const addElement = useCallback((type, content) => {
-        console.log(`Adding element: ${type}`);
         const newElement = {
             type,
             content,
@@ -225,7 +220,6 @@ export function ReactStickerDesigner() {
     }, [circleDiameter]);
 
     const updateElement = useCallback((id, updates) => {
-        console.log(`Updating element: ${id}`, updates);
         setElements(prevElements =>
             prevElements.map(el => el.id === id ? { ...el, ...updates } : el)
         );
@@ -235,7 +229,6 @@ export function ReactStickerDesigner() {
     }, []);
 
     const deleteElement = useCallback((id) => {
-        console.log(`Deleting element: ${id}`);
         setElements(prevElements => prevElements.filter(el => el.id !== id));
         setSelectedElement(null);
     }, []);
@@ -254,7 +247,6 @@ export function ReactStickerDesigner() {
     }, [selectedElement, deleteElement]);
 
     const renderCanvas = useCallback(() => {
-        console.log("Rendering canvas");
         const canvas = canvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext("2d");
@@ -271,7 +263,6 @@ export function ReactStickerDesigner() {
         ctx.fill();
 
         elements.forEach((element) => {
-            console.log(`Rendering element:`, element);
             ctx.save();
             ctx.translate(element.x, element.y);
 
@@ -313,12 +304,10 @@ export function ReactStickerDesigner() {
     }, [elements, circleColor, circleDiameter]);
 
     useEffect(() => {
-        console.log("Canvas effect triggered");
         renderCanvas();
     }, [renderCanvas]);
 
     const getCanvasImage = useCallback(() => {
-        console.log("Getting canvas image");
         return new Promise((resolve) => {
             setTimeout(() => {
                 renderCanvas();
@@ -329,28 +318,22 @@ export function ReactStickerDesigner() {
     }, [renderCanvas]);
 
     const sendToBackend = useCallback(async () => {
-        console.log("Sending to backend");
         const imageData = await getCanvasImage();
         
-        // Retrieve contact form data from localStorage
         const contactFormData = JSON.parse(localStorage.getItem('contactFormData') || '{}');
     
         const formData = new FormData();
         
-        // Add contact form data
         Object.keys(contactFormData).forEach(key => {
             formData.append(key, contactFormData[key]);
         });
     
-        // Add sticker design data
         formData.append('stickerDesign', JSON.stringify({
             elements,
             circleColor,
             designMode,
         }));
         formData.append('stickerImage', imageData);
-    
-        console.log("Sending data to backend:", Object.fromEntries(formData));
     
         try {
             const response = await fetch("https://hooks.zapier.com/hooks/catch/16953346/24ek7b2/", {
@@ -359,17 +342,12 @@ export function ReactStickerDesigner() {
             });
             if (response.ok) {
                 const responseData = await response.json();
-                console.log("Data sent to backend successfully", responseData);
     
-                // Clear the stored form data
                 localStorage.removeItem('contactFormData');
                 localStorage.removeItem('stickerDesignData');
     
-                // Get the quantity from contactFormData
                 const quantity = parseInt(contactFormData.quantity, 10);
-                console.log("Quantity:", quantity); // Add this line for debugging
     
-                // Determine the redirect URL based on the quantity
                 let redirectUrl;
                 switch (quantity) {
                     case 1:
@@ -388,22 +366,14 @@ export function ReactStickerDesigner() {
                         redirectUrl = 'https://buy.stripe.com/eVa5l71lOfDEdSEeWh';
                         break;
                     default:
-                        console.log("Invalid quantity, using default URL");
-                        redirectUrl = 'https://buy.stripe.com/cN228Vd4w6347ugaFR'; // Default to the first link
+                        redirectUrl = 'https://buy.stripe.com/cN228Vd4w6347ugaFR';
                 }
     
-                console.log("Redirecting to:", redirectUrl); // Add this line for debugging
-    
-                // Redirect to the appropriate Stripe checkout page
                 window.location.href = redirectUrl;
             } else {
                 const responseText = await response.text();
-                console.error("Failed to send data to backend", responseText);
-                // Handle error (e.g., show error message to user)
             }
         } catch (error) {
-            console.error("Error sending data to backend:", error);
-            // Handle error (e.g., show error message to user)
         }
     }, [elements, getCanvasImage, circleColor, designMode]);
 
@@ -618,7 +588,6 @@ function DraggableElement({
     const [isEditing, setIsEditing] = useState(false);
 
     const handleMouseDown = (e) => {
-        console.log("Mouse down on element:", element.id);
         if (!isEditing) {
             setIsDragging(true);
             setDragStart({ x: e.clientX / zoom - element.x, y: e.clientY / zoom - element.y });
@@ -635,9 +604,8 @@ function DraggableElement({
     }, [isDragging, dragStart, element, updateElement, circleDiameter, renderCanvas, zoom]);
 
     const handleMouseUp = useCallback(() => {
-        console.log("Mouse up on element:", element.id);
         setIsDragging(false);
-    }, [element.id]);
+    }, []);
 
     useEffect(() => {
         if (isDragging) {
@@ -651,7 +619,6 @@ function DraggableElement({
     }, [isDragging, handleMouseMove, handleMouseUp]);
 
     const handleResize = (e, corner) => {
-        console.log("Resizing element:", element.id);
         e.stopPropagation();
         const startX = e.clientX;
         const startY = e.clientY;
