@@ -342,6 +342,7 @@ export function ReactStickerDesigner() {
             });
             if (response.ok) {
                 const responseData = await response.json();
+                console.log(responseData)
     
                 localStorage.removeItem('contactFormData');
                 localStorage.removeItem('stickerDesignData');
@@ -372,6 +373,7 @@ export function ReactStickerDesigner() {
                 window.location.href = redirectUrl;
             } else {
                 const responseText = await response.text();
+                console.log(responseText)
             }
         } catch (error) {
         }
@@ -629,7 +631,7 @@ function DraggableElement({
             const deltaX = (moveEvent.clientX - startX) / zoom;
             const deltaY = (moveEvent.clientY - startY) / zoom;
             let newWidth, newHeight, newX = element.x, newY = element.y;
-
+        
             switch (corner) {
                 case "topLeft":
                     newWidth = Math.max(20, startWidth - deltaX);
@@ -651,8 +653,11 @@ function DraggableElement({
                     newWidth = Math.min(Math.max(20, startWidth + deltaX), circleDiameter - element.x);
                     newHeight = Math.min(Math.max(20, startHeight + deltaY), circleDiameter - element.y);
                     break;
+                default:
+                    console.warn(`Unexpected corner value: ${corner}`);
+                    return; // Exit the function without updating
             }
-
+        
             updateElement(element.id, { width: newWidth, height: newHeight, x: newX, y: newY });
             renderCanvas();
         };
