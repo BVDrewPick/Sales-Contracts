@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
 import { MenuTemplate, GenericLogoTemplate } from '../Images/ImageRepository';
 
 const buttonStyle = {
@@ -60,7 +60,7 @@ export function ReactStickerDesigner() {
     const [designMode, setDesignMode] = useState("custom");
     const canvasRef = useRef(null);
     const containerRef = useRef(null);
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
 
     const circleDiameter = 1400;
     const fixedZoom = 0.2;
