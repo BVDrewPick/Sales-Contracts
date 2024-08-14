@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { MenuTemplate, GenericLogoTemplate } from '../Images/ImageRepository';
+import { MenuTemplate, GenericLogoTemplate, ReviewTemplate, FiveStar } from '../Images/ImageRepository';
 
 const buttonStyle = {
     padding: "10px 15px",
@@ -84,6 +84,7 @@ export function ReactStickerDesigner() {
                     fontFamily: "Horizon",
                     color: "#FFFFFF",
                     id: 1,
+                    fontWeight: "bold",
                 },
                 {
                     color : "#FFFFFF",
@@ -188,6 +189,107 @@ export function ReactStickerDesigner() {
                 },
             ],
         },
+        template3: {
+            circleColor: "#0CC0DF",
+            elements: [
+                {
+                    type: "text",
+                    content: "LEAVE US A REVIEW",
+                    x: 340,
+                    y: 75,
+                    width: 700,
+                    height: 500,
+                    fontSize: 155,
+                    fontFamily: "Verdana",
+                    color: "#000000",
+                    id: 1,
+                    fontWeight: "bold",
+                },
+                {
+                    type: "logo",
+                    content: FiveStar,
+                    x: 200,
+                    y: 225,
+                    width: 950,
+                    height: 800,
+                    id: 2,
+                },
+                {
+                    type: "text",
+                    content: "(SCAN OR TAP)",
+                    x: 315,
+                    y: 720,
+                    width: 350,
+                    height: 75,
+                    fontSize: 40,
+                    fontFamily: "Horizon",
+                    color: "#000000",
+                    id: 9,
+                },
+                {
+                    type: "qrcode",
+                    content: "https://example.com",
+                    x: 300,
+                    y: 780,
+                    width: 373,
+                    height: 371,
+                    fontSize: 12,
+                    fontFamily: "Arial",
+                    color: "#000000",
+                    id: 8,
+                },
+                {
+                    type: "nfctap",
+                    content: "",
+                    x: 245,
+                    y: 90,
+                    width: 35,
+                    height: 35,
+                    fontSize: 12,
+                    fontFamily: "Arial",
+                    color: "#FFFFFF",
+                    id: 5,
+                },
+                {
+                    type: "text",
+                    content: "Place Logo Here",
+                    y: 950,
+                    x: 800,
+                    width: 495,
+                    height: 115,
+                    fontSize: 55,
+                    fontFamily: "Horizon",
+                    color: "#FFFFFF",
+                    id: 6,
+                },
+                {
+                    type: "text",
+                    content: "Powered By",
+                    y: 1180,
+                    x: 450,
+                    width: 495,
+                    height: 115,
+                    fontSize: 55,
+                    fontFamily: "Horizon",
+                    color: "#000000",
+                    id: 11,
+                    fontWeight: "bold",
+                },
+                {
+                    type: "text",
+                    content: "BLUEVERSE",
+                    y: 1250,
+                    x: 450,
+                    width: 495,
+                    height: 115,
+                    fontSize: 55,
+                    fontFamily: "Horizon",
+                    color: "#2241E6",
+                    id: 10,
+                    fontWeight: "bold",
+                },
+            ],
+        },
     }), []);
 
     const loadTemplate = useCallback((template) => {
@@ -267,7 +369,7 @@ export function ReactStickerDesigner() {
             ctx.translate(element.x, element.y);
 
             if (element.type === "text") {
-                ctx.font = `${element.fontSize}px ${element.fontFamily}`;
+                ctx.font = `${element.fontWeight || ''} ${element.fontSize}px ${element.fontFamily}`;
                 ctx.fillStyle = element.color;
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
@@ -366,6 +468,21 @@ export function ReactStickerDesigner() {
                     case 5:
                         redirectUrl = 'https://buy.stripe.com/eVa5l71lOfDEdSEeWh';
                         break;
+                    case 6:
+                        redirectUrl = 'https://buy.stripe.com/7sI8xjfcE2QSdSEaG7';
+                        break;
+                    case 7:
+                        redirectUrl = 'https://buy.stripe.com/14k14R1lO63429W15y';
+                        break; 
+                    case 8:
+                        redirectUrl = 'https://buy.stripe.com/9AQ8xj4y0bnodSEcOh';
+                        break;
+                    case 9:
+                        redirectUrl = 'https://buy.stripe.com/4gw00N3tWgHI7ug4hM';
+                        break;
+                    case 10:
+                        redirectUrl = 'https://buy.stripe.com/dR6cNzc0s1MO15S8y3';
+                        break;       
                     default:
                         redirectUrl = 'https://buy.stripe.com/cN228Vd4w6347ugaFR';
                 }
@@ -396,9 +513,13 @@ export function ReactStickerDesigner() {
                     <img src={MenuTemplate} alt="Menu template" style={{ width: 100, height: 100, borderRadius: "50%" }} />
                     <span>Menu template</span>
                 </div>
+                <div onClick={() => loadTemplate("template3")} style={templateButtonStyle}>
+                <img src={ReviewTemplate} alt="Review template" style={{ width: 100, height: 100, borderRadius: "50%" }} />
+                    <span>Review template</span>
+                </div>
                 <div onClick={() => loadTemplate("template2")} style={templateButtonStyle}>
                     <img src={GenericLogoTemplate} alt="Generic Logo template" style={{ width: 100, height: 100, borderRadius: "50%" }} />
-                    <span>Generic Logo template</span>
+                    <span>Generic template</span>
                 </div>
                 <div onClick={startCustomDesign} style={templateButtonStyle}>
                     <div style={{ width: 100, height: 100, backgroundColor: "#ffffff", borderRadius: "50%", border: "1px solid #ccc" }}></div>
@@ -487,6 +608,14 @@ export function ReactStickerDesigner() {
                                         {fonts.map((font) => (
                                             <option key={font} value={font}>{font}</option>
                                         ))}
+                                    </select>
+                                    <select
+                                        value={selectedElement.fontWeight || 'normal'}
+                                        onChange={(e) => updateElement(selectedElement.id, { fontWeight: e.target.value })}
+                                        style={inputStyle}
+                                    >
+                                        <option value="normal">Normal</option>
+                                        <option value="bold">Bold</option>
                                     </select>
                                 </>
                             )}
@@ -693,6 +822,7 @@ function DraggableElement({
         fontFamily: element.fontFamily,
         fontSize: `${element.fontSize * zoom}px`,
         color: element.color,
+        fontWeight: element.fontWeight || 'normal',
     };
 
     return (

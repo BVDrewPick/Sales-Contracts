@@ -13,7 +13,10 @@ import OrderHere from './content/OrderHere.png'
 import ReviewUs from './content/REVIEW.png'
 import GenericLogoTemplate from './content/GenericLogoTemplate.png'
 import MenuTemplate from './content/MenuTemplate.png'
+import ReviewTemplate from './content/ReviewTemplate.png'
+import FiveStar from './content/5Star.png'
 
 
 export {Base1YearOF, BVLogo, POSButton, POSButtonTableNumber, CallServer, CheckIn, dealWithTableNumber, dealsWithOutTableNumber,
-InstagramFollow, Menu, scootersMenu, OrderHere, ReviewUs, GenericLogoTemplate, MenuTemplate};
+InstagramFollow, Menu, scootersMenu, OrderHere, ReviewUs, GenericLogoTemplate, MenuTemplate, ReviewTemplate
+, FiveStar};

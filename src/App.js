@@ -9,6 +9,12 @@ import ReactStickerDesigner from './contract-types/CustomTTQ1';
 import { ContactFormQ3 } from './contract-types/TTQ3';
 import { ContactFormQ4 } from './contract-types/TTQ4';
 import { ContactFormQ5 } from './contract-types/TTQ5';
+import { ContactFormQ6 } from './contract-types/TTQ6';
+import { ContactFormQ7 } from './contract-types/TTQ7';
+import { ContactFormQ8 } from './contract-types/TTQ8';
+import { ContactFormQ9 } from './contract-types/TTQ9';
+import { ContactFormQ10 } from './contract-types/TTQ10';
+
 
 const trackingId = 'G-E6M7CFVVWZ';
 
@@ -39,6 +45,12 @@ const App = () => {
           <Route path="/tabletech/checkout/contactform/3" element={<ContactFormWrapper Component={ContactFormQ3} />} />
           <Route path="/tabletech/checkout/contactform/4" element={<ContactFormWrapper Component={ContactFormQ4} />} />
           <Route path="/tabletech/checkout/contactform/5" element={<ContactFormWrapper Component={ContactFormQ5} />} />
+          <Route path="/tabletech/checkout/contactform/6" element={<ContactFormWrapper Component={ContactFormQ6} />} />
+          <Route path="/tabletech/checkout/contactform/7" element={<ContactFormWrapper Component={ContactFormQ7} />} />
+          <Route path="/tabletech/checkout/contactform/8" element={<ContactFormWrapper Component={ContactFormQ8} />} />
+          <Route path="/tabletech/checkout/contactform/9" element={<ContactFormWrapper Component={ContactFormQ9} />} />
+          <Route path="/tabletech/checkout/contactform/10" element={<ContactFormWrapper Component={ContactFormQ10} />} />
+
           <Route path="/tabletech/checkout/design" element={<ReactStickerDesigner />} />
         </Routes>
       </div>
