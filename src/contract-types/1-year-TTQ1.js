@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // ContactForm Component
@@ -168,7 +168,7 @@ export function ContactForm() {
                     }} 
                     disabled={isSubmitting}
                 >
-                    {isSubmitting ? "Submitting..." : "Submit"}
+                    {isSubmitting ? "Submitting..." : "Continue to Customize"}
                 </button>
             </form>
         </div>

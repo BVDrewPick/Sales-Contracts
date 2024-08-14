@@ -169,7 +169,7 @@ export function ContactFormQ5() {
                     }} 
                     disabled={isSubmitting}
                 >
-                    {isSubmitting ? "Submitting..." : "Submit"}
+                    {isSubmitting ? "Submitting..." : "Continue to Customize"}
                 </button>
             </form>
         </div>
