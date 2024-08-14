@@ -413,7 +413,7 @@ export function ReactStickerDesigner() {
                     borderRight: "1px solid #ccc",
                     overflowY: "auto",
                 }}>
-                    <h3 style={{ marginTop: 0, marginBottom: 20, textAlign: "center" }}>Sticker Designer</h3>
+                    <h3 style={{ marginTop: 0, marginBottom: 20, textAlign: "center" }}>NFC Designer</h3>
                     <button onClick={() => addElement("text", "New Text")} style={buttonStyle}>
                         Add Text
                     </button>
@@ -523,7 +523,7 @@ export function ReactStickerDesigner() {
                         </div>
                     )}
                     <button onClick={sendToBackend} style={buttonStyle}>
-                        Send to Zapier
+                        Continue to Checkout
                     </button>
                 </div>
                 <div style={{
