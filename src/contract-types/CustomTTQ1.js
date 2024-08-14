@@ -80,7 +80,7 @@ export function ReactStickerDesigner() {
                     y: 180,
                     width: 1000,
                     height: 240,
-                    fontSize: 340,
+                    fontSize: 300,
                     fontFamily: "Horizon",
                     color: "#FFFFFF",
                     id: 1,
