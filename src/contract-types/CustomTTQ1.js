@@ -59,6 +59,8 @@ export function ReactStickerDesigner() {
     const [designMode, setDesignMode] = useState("custom");
     const canvasRef = useRef(null);
     const containerRef = useRef(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [formData, setFormData] = useState({});
 
     const circleDiameter = 1400;
     const fixedZoom = 0.2;
@@ -374,7 +376,6 @@ export function ReactStickerDesigner() {
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
     
-                // Split the text into lines
                 const words = element.content.split(' ');
                 let lines = [];
                 let currentLine = words[0];
@@ -391,11 +392,9 @@ export function ReactStickerDesigner() {
                 }
                 lines.push(currentLine);
     
-                // Calculate line height and starting y position
                 const lineHeight = element.fontSize * 1.2;
                 let startY = (element.height - lineHeight * lines.length) / 2;
     
-                // Draw each line
                 lines.forEach((line, index) => {
                     ctx.fillText(line, element.width / 2, startY + lineHeight * index + lineHeight / 2);
                 });
@@ -437,7 +436,6 @@ export function ReactStickerDesigner() {
     const handleFileUpload = (e) => {
         const file = e.target.files?.[0];
         if (file) {
-            // Check if file size is greater than 5MB (5 * 1024 * 1024 bytes)
             if (file.size > 5 * 1024 * 1024) {
                 alert("File size exceeds 5MB limit. Please choose a smaller file.");
                 e.target.value = ''; // Clear the file input
@@ -450,6 +448,7 @@ export function ReactStickerDesigner() {
         }
     };
 
+
     const getCanvasImage = useCallback(() => {
         return new Promise((resolve) => {
             setTimeout(() => {
@@ -460,11 +459,29 @@ export function ReactStickerDesigner() {
         });
     }, [renderCanvas]);
 
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prevData => ({ ...prevData, [name]: value }));
+    };
+
     const sendToBackend = useCallback(async () => {
         const imageData = await getCanvasImage();
         
-        const contactFormData = JSON.parse(localStorage.getItem('contactFormData') || '{}');
-    
+        let contactFormData = JSON.parse(localStorage.getItem('contactFormData') || '{}');
+        
+        const requiredFields = ['name', 'email', 'phone', 'businessName', 'businessAddress', 'quantity'];
+        const missingFields = requiredFields.filter(field => !contactFormData[field]);
+        
+        if (missingFields.length > 0) {
+            const missingFormData = {};
+            missingFields.forEach(field => {
+                missingFormData[field] = contactFormData[field] || '';
+            });
+            setFormData(missingFormData);
+            setIsDialogOpen(true);
+            return;
+        }
+        
         const formData = new FormData();
         
         Object.keys(contactFormData).forEach(key => {
@@ -485,7 +502,7 @@ export function ReactStickerDesigner() {
             });
             if (response.ok) {
                 const responseData = await response.json();
-                console.log(responseData)
+                console.log(responseData);
     
                 localStorage.removeItem('contactFormData');
                 localStorage.removeItem('stickerDesignData');
@@ -531,11 +548,25 @@ export function ReactStickerDesigner() {
                 window.location.href = redirectUrl;
             } else {
                 const responseText = await response.text();
-                console.log(responseText)
+                console.log(responseText);
             }
         } catch (error) {
+            console.error("Error sending data to backend:", error);
         }
     }, [elements, getCanvasImage, circleColor, designMode]);
+
+    const handleFormSubmit = () => {
+        const missingFields = Object.keys(formData).filter(key => !formData[key]);
+        if (missingFields.length === 0) {
+            const existingData = JSON.parse(localStorage.getItem('contactFormData') || '{}');
+            const updatedData = { ...existingData, ...formData };
+            localStorage.setItem('contactFormData', JSON.stringify(updatedData));
+            setIsDialogOpen(false);
+            sendToBackend();
+        } else {
+            alert("Please fill out all fields before submitting.");
+        }
+    };
 
     return (
         <div style={{
@@ -746,6 +777,54 @@ export function ReactStickerDesigner() {
                     </div>
                 </div>
             </div>
+            {isDialogOpen && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}>
+                    <div style={{
+                        backgroundColor: 'white',
+                        padding: '20px',
+                        borderRadius: '8px',
+                        maxWidth: '400px',
+                        width: '100%',
+                    }}>
+                        <h2 style={{ marginTop: 0 }}>Please fill out the missing information</h2>
+                        <form>
+                            {Object.keys(formData).map((key) => (
+                                <div key={key} style={{ marginBottom: '15px' }}>
+                                    <label style={{ display: 'block', marginBottom: '5px' }}>
+                                        {key.charAt(0).toUpperCase() + key.slice(1)}
+                                    </label>
+                                    <input
+                                        style={inputStyle}
+                                        id={key}
+                                        name={key}
+                                        value={formData[key]}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                            ))}
+                <button 
+                                onClick={handleFormSubmit}
+                                style={{
+                                    ...buttonStyle,
+                                    marginTop: '10px',
+                                }}
+                            >
+                                Submit
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
@@ -827,117 +906,117 @@ function DraggableElement({
                     newWidth = Math.min(Math.max(20, startWidth + deltaX), circleDiameter - element.x);
                     newHeight = Math.min(Math.max(20, startHeight + deltaY), circleDiameter - element.y);
                     break;
-                    default:
-                        console.warn(`Unexpected corner value: ${corner}`);
-                        return; // Exit the function without updating
-                }
-            
-                updateElement(element.id, { width: newWidth, height: newHeight, x: newX, y: newY });
-                renderCanvas();
-            };
-    
-            const handleMouseUp = () => {
-                document.removeEventListener("mousemove", handleMouseMove);
-                document.removeEventListener("mouseup", handleMouseUp);
-            };
-    
-            document.addEventListener("mousemove", handleMouseMove);
-            document.addEventListener("mouseup", handleMouseUp);
+                default:
+                    console.warn(`Unexpected corner value: ${corner}`);
+                    return; // Exit the function without updating
+            }
+        
+            updateElement(element.id, { width: newWidth, height: newHeight, x: newX, y: newY });
+            renderCanvas();
         };
     
-        const commonStyle = {
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",
-            padding: 0,
-            margin: 0,
-            lineHeight: 1,
-            overflow: "hidden",
-            background: "transparent",
-            resize: "none",
-            border: "none",
-            userSelect: "none",
+        const handleMouseUp = () => {
+            document.removeEventListener("mousemove", handleMouseMove);
+            document.removeEventListener("mouseup", handleMouseUp);
         };
     
-        const commonTextStyle = {
-            ...commonStyle,
-            fontFamily: element.fontFamily,
-            fontSize: `${element.fontSize * zoom}px`,
-            color: element.color,
-            fontWeight: element.fontWeight || 'normal',
-        };
+        document.addEventListener("mousemove", handleMouseMove);
+        document.addEventListener("mouseup", handleMouseUp);
+    };
     
-        return (
-            <div
-                onMouseDown={handleMouseDown}
-                style={{
-                    position: "absolute",
-                    top: element.y * zoom,
-                    left: element.x * zoom,
-                    cursor: isEditing ? "text" : "move",
-                    border: isSelected ? "2px solid blue" : "none",
-                    padding: 0,
-                    width: element.width * zoom,
-                    height: element.height * zoom,
-                }}
-                onClick={() => setSelectedElement(element)}
-            >
-                {element.type === "text" && (
-                    isEditing ? (
-                        <textarea
-                            value={element.content}
-                            onChange={(e) => updateElement(element.id, { content: e.target.value })}
-                            onBlur={() => setIsEditing(false)}
-                            autoFocus
-                            style={commonTextStyle}
-                        />
-                    ) : (
-                        <div onDoubleClick={() => setIsEditing(true)} style={commonTextStyle}>
-                            {element.content}
-                        </div>
-                    )
-                )}
-                {element.type === "logo" && (
-                    <img
-                        src={element.content}
-                        style={{
-                            ...commonStyle,
-                            objectFit: "contain",
-                        }}
-                        alt="Uploaded logo"
-                        draggable={false}
+    const commonStyle = {
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        padding: 0,
+        margin: 0,
+        lineHeight: 1,
+        overflow: "hidden",
+        background: "transparent",
+        resize: "none",
+        border: "none",
+        userSelect: "none",
+    };
+    
+    const commonTextStyle = {
+        ...commonStyle,
+        fontFamily: element.fontFamily,
+        fontSize: `${element.fontSize * zoom}px`,
+        color: element.color,
+        fontWeight: element.fontWeight || 'normal',
+    };
+    
+    return (
+        <div
+            onMouseDown={handleMouseDown}
+            style={{
+                position: "absolute",
+                top: element.y * zoom,
+                left: element.x * zoom,
+                cursor: isEditing ? "text" : "move",
+                border: isSelected ? "2px solid blue" : "none",
+                padding: 0,
+                width: element.width * zoom,
+                height: element.height * zoom,
+            }}
+            onClick={() => setSelectedElement(element)}
+        >
+            {element.type === "text" && (
+                isEditing ? (
+                    <textarea
+                        value={element.content}
+                        onChange={(e) => updateElement(element.id, { content: e.target.value })}
+                        onBlur={() => setIsEditing(false)}
+                        autoFocus
+                        style={commonTextStyle}
                     />
-                )}
-                {element.type === "qrcode" && (
-                    <div style={{
-                        ...commonStyle,
-                        backgroundColor: "white",
-                        border: "2px solid black",
-                        flexDirection: "column",
-                        fontSize: `${Math.min(element.width, element.height) / 10 * zoom}px`,
-                        color: "black",
-                        lineHeight: 1.2,
-                    }}>
-                        <div>QR CODE</div>
-                        <div>PLACEHOLDER</div>
-                        <div>(QR CODE WILL</div>
-                        <div>BE GENERATED</div>
-                        <div>HERE)</div>
+                ) : (
+                    <div onDoubleClick={() => setIsEditing(true)} style={commonTextStyle}>
+                        {element.content}
                     </div>
-                )}
-                {isSelected && (
-                    <>
-                        <div style={{ ...resizeHandleStyle, top: -5, left: -5, cursor: "nwse-resize" }} onMouseDown={(e) => handleResize(e, "topLeft")} />
-                        <div style={{ ...resizeHandleStyle, top: -5, right: -5, cursor: "nesw-resize" }} onMouseDown={(e) => handleResize(e, "topRight")} />
-                        <div style={{ ...resizeHandleStyle, bottom: -5, left: -5, cursor: "nesw-resize" }} onMouseDown={(e) => handleResize(e, "bottomLeft")} />
-                        <div style={{ ...resizeHandleStyle, bottom: -5, right: -5, cursor: "nwse-resize" }} onMouseDown={(e) => handleResize(e, "bottomRight")} />
-                    </>
-                )}
-            </div>
-        );
-    }
-    
-    export default ReactStickerDesigner;
+                )
+            )}
+            {element.type === "logo" && (
+                <img
+                    src={element.content}
+                    style={{
+                        ...commonStyle,
+                        objectFit: "contain",
+                    }}
+                    alt="Uploaded logo"
+                    draggable={false}
+                />
+            )}
+            {element.type === "qrcode" && (
+                <div style={{
+                    ...commonStyle,
+                    backgroundColor: "white",
+                    border: "2px solid black",
+                    flexDirection: "column",
+                    fontSize: `${Math.min(element.width, element.height) / 10 * zoom}px`,
+                    color: "black",
+                    lineHeight: 1.2,
+                }}>
+                    <div>QR CODE</div>
+                    <div>PLACEHOLDER</div>
+                    <div>(QR CODE WILL</div>
+                    <div>BE GENERATED</div>
+                    <div>HERE)</div>
+                </div>
+            )}
+            {isSelected && (
+                <>
+                    <div style={{ ...resizeHandleStyle, top: -5, left: -5, cursor: "nwse-resize" }} onMouseDown={(e) => handleResize(e, "topLeft")} />
+                    <div style={{ ...resizeHandleStyle, top: -5, right: -5, cursor: "nesw-resize" }} onMouseDown={(e) => handleResize(e, "topRight")} />
+                    <div style={{ ...resizeHandleStyle, bottom: -5, left: -5, cursor: "nesw-resize" }} onMouseDown={(e) => handleResize(e, "bottomLeft")} />
+                    <div style={{ ...resizeHandleStyle, bottom: -5, right: -5, cursor: "nwse-resize" }} onMouseDown={(e) => handleResize(e, "bottomRight")} />
+                </>
+            )}
+        </div>
+    );
+}
+
+export default ReactStickerDesigner;
