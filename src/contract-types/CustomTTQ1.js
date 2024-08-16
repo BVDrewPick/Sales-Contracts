@@ -1078,6 +1078,7 @@ function DraggableElement({
         };
     }, [isDragging, handleMove, handleEnd]);
 
+
     const handleResize = (e, corner) => {
         e.stopPropagation();
         const startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
@@ -1113,6 +1114,10 @@ function DraggableElement({
                     newWidth = Math.min(Math.max(20, startWidth + deltaX), circleDiameter - element.x);
                     newHeight = Math.min(Math.max(20, startHeight + deltaY), circleDiameter - element.y);
                     break;
+                default:
+                    // If an unexpected corner is provided, do not resize
+                    console.warn(`Unexpected resize corner: ${corner}`);
+                    return;
             }
 
             updateElement(element.id, { width: newWidth, height: newHeight, x: newX, y: newY });
