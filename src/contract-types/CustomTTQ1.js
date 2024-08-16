@@ -38,8 +38,8 @@ const inputStyle = {
 
 const resizeHandleStyle = {
     position: "absolute",
-    width: "10px",
-    height: "10px",
+    width: "20px",
+    height: "20px",
     backgroundColor: "blue",
     borderRadius: "50%",
 };
@@ -61,9 +61,10 @@ export function ReactStickerDesigner() {
     const containerRef = useRef(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [formData, setFormData] = useState({});
+    const [isMobile, setIsMobile] = useState(false);
 
     const circleDiameter = 1400;
-    const fixedZoom = 0.2;
+    const [zoom, setZoom] = useState(0.2);
 
     const fonts = [
         "Arial", "Helvetica", "Times New Roman", "Courier", "Verdana",
@@ -294,6 +295,17 @@ export function ReactStickerDesigner() {
         },
     }), []);
 
+    useEffect(() => {
+        const checkMobile = () => {
+            const isMobileDevice = window.innerWidth <= 768;
+            setIsMobile(isMobileDevice);
+            setZoom(isMobileDevice ? 0.15 : 0.2);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     const loadTemplate = useCallback((template) => {
         setCircleColor(templateDesigns[template].circleColor);
         setElements(templateDesigns[template].elements);
@@ -438,7 +450,7 @@ export function ReactStickerDesigner() {
         if (file) {
             if (file.size > 5 * 1024 * 1024) {
                 alert("File size exceeds 5MB limit. Please choose a smaller file.");
-                e.target.value = ''; // Clear the file input
+                e.target.value = '';
                 return;
             }
 
@@ -447,7 +459,6 @@ export function ReactStickerDesigner() {
             reader.readAsDataURL(file);
         }
     };
-
 
     const getCanvasImage = useCallback(() => {
         return new Promise((resolve) => {
@@ -568,25 +579,287 @@ export function ReactStickerDesigner() {
         }
     };
 
-    return (
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-            height: "100vh",
-            fontFamily: "Arial, sans-serif",
-        }}>
+    const renderElementProperties = () => {
+        const commonInputStyle = {
+            ...inputStyle,
+            width: isMobile ? "auto" : "100%",
+            height: "30px",
+            marginBottom: isMobile ? 0 : "0px",
+        };
+    
+        const containerStyle = {
+            padding: 10,
+            backgroundColor: "#f0f0f0",
+            borderTop: "1px solid #ccc",
+            borderBottom: "1px solid #ccc",
+            ...(isMobile
+                ? {
+                      overflowX: "auto",
+                      whiteSpace: "nowrap",
+                      display: "flex",
+                      alignItems: "center",
+                      height: "100px",
+                  }
+                : {
+                      overflowY: "auto",
+                      maxHeight: "30vh",
+                  }),
+        };
+    
+        const elementStyle = {
+            ...(isMobile
+                ? {
+                      marginRight: 10,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                  }
+                : {
+                      marginBottom: 5,
+                  }),
+        };
+    
+        const labelStyle = {
+            fontSize: isMobile ? '10px' : '14px',
+            marginBottom: '2px',
+            ...(isMobile ? {} : { display: 'block' }),
+        };
+    
+        const colorInputStyle = {
+            ...commonInputStyle,
+            padding: 0,
+            border: "none",
+            ...(isMobile ? {
+                width: "60px",  // Increased width for mobile
+                height: "40px", // Increased height for mobile
+            } : {}),
+        };
+    
+        return (
+            <div style={containerStyle}>
+                {!isMobile && <h4 style={{ marginTop: 0, marginBottom: 10 }}>Element Properties</h4>}
+                {selectedElement.type === "text" && (
+                    <>
+                        <div style={elementStyle}>
+                            <span style={labelStyle}>Text</span>
+                            <input
+                                type="text"
+                                value={selectedElement.content}
+                                onChange={(e) => updateElement(selectedElement.id, { content: e.target.value })}
+                                style={commonInputStyle}
+                            />
+                        </div>
+                        <div style={elementStyle}>
+                            <span style={labelStyle}>Color</span>
+                            <input
+                                type="color"
+                                value={selectedElement.color}
+                                onChange={(e) => updateElement(selectedElement.id, { color: e.target.value })}
+                                style={colorInputStyle}
+                            />
+                        </div>
+                        <div style={elementStyle}>
+                            <span style={labelStyle}>Size</span>
+                            <input
+                                type="number"
+                                value={selectedElement.fontSize}
+                                onChange={(e) => {
+                                    const newSize = Math.max(1, parseInt(e.target.value) || 1);
+                                    updateElement(selectedElement.id, { fontSize: newSize });
+                                }}
+                                style={commonInputStyle}
+                            />
+                        </div>
+                        <div style={elementStyle}>
+                            <span style={labelStyle}>Font</span>
+                            <select
+                                value={selectedElement.fontFamily}
+                                onChange={(e) => updateElement(selectedElement.id, { fontFamily: e.target.value })}
+                                style={commonInputStyle}
+                            >
+                                {fonts.map((font) => (
+                                    <option key={font} value={font}>{font}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div style={elementStyle}>
+                            <span style={labelStyle}>Weight</span>
+                            <select
+                                value={selectedElement.fontWeight || 'normal'}
+                                onChange={(e) => updateElement(selectedElement.id, { fontWeight: e.target.value })}
+                                style={commonInputStyle}
+                            >
+                                <option value="normal">Normal</option>
+                                <option value="bold">Bold</option>
+                            </select>
+                        </div>
+                    </>
+                )}
+                {selectedElement.type === "logo" && (
+                    <div style={elementStyle}>
+                        <span style={labelStyle}>Size</span>
+                        <input
+                            type="number"
+                            value={selectedElement.width}
+                            onChange={(e) => updateElement(selectedElement.id, {
+                                width: Number(e.target.value),
+                                height: Number(e.target.value),
+                            })}
+                            style={commonInputStyle}
+                        />
+                    </div>
+                )}
+                {selectedElement.type === "qrcode" && (
+                    <div style={elementStyle}>
+                        <span style={labelStyle}>QR Content</span>
+                        <input
+                            type="text"
+                            value={selectedElement.content}
+                            onChange={(e) => updateElement(selectedElement.id, { content: e.target.value })}
+                            style={commonInputStyle}
+                        />
+                    </div>
+                )}
+            </div>
+        );
+    };
+    
+
+    const renderMobileLayout = () => (
+        <>
             <div style={{
                 display: "flex",
                 justifyContent: "center",
                 padding: "20px",
                 borderBottom: "1px solid #ccc",
+                flexWrap: "wrap",
             }}>
                 <div onClick={() => loadTemplate("template1")} style={templateButtonStyle}>
                     <img src={MenuTemplate} alt="Menu template" style={{ width: 100, height: 100, borderRadius: "50%" }} />
                     <span>Menu template</span>
                 </div>
                 <div onClick={() => loadTemplate("template3")} style={templateButtonStyle}>
-                <img src={ReviewTemplate} alt="Review template" style={{ width: 100, height: 100, borderRadius: "50%" }} />
+                    <img src={ReviewTemplate} alt="Review template" style={{ width: 100, height: 100, borderRadius: "50%" }} />
+                    <span>Review template</span>
+                </div>
+                <div onClick={() => loadTemplate("template2")} style={templateButtonStyle}>
+                    <img src={GenericLogoTemplate} alt="Generic Logo template" style={{ width: 100, height: 100, borderRadius: "50%" }} />
+                    <span>Generic template</span>
+                </div>
+                <div onClick={startCustomDesign} style={templateButtonStyle}>
+                    <div style={{ width: 100, height: 100, backgroundColor: "#ffffff", borderRadius: "50%", border: "1px solid #ccc" }}></div>
+                    <span>Custom Design</span>
+                </div>
+            </div>
+            {selectedElement && renderElementProperties()}
+            <div style={{
+                flex: 1,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "#e0e0e0",
+                overflow: "auto",
+                padding: "20px 0",
+            }}>
+                <div
+                    ref={containerRef}
+                    style={{
+                        position: "relative",
+                        width: circleDiameter * zoom,
+                        height: circleDiameter * zoom,
+                    }}
+                >
+                    <div style={{
+                        position: "absolute",
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: "50%",
+                        backgroundColor: circleColor,
+                        overflow: "hidden",
+                    }}>
+                        {elements.map((element) => (
+                            <DraggableElement
+                                key={element.id}
+                                element={element}
+                                updateElement={updateElement}
+                                setSelectedElement={setSelectedElement}
+                                isSelected={selectedElement && selectedElement.id === element.id}
+                                circleDiameter={circleDiameter}
+                                renderCanvas={renderCanvas}
+                                zoom={zoom}
+                            />
+                        ))}
+                    </div>
+                    <canvas
+                        ref={canvasRef}
+                        width={circleDiameter}
+                        height={circleDiameter}
+                        style={{ display: "none" }}
+                    />
+                </div>
+            </div>
+            <div style={{
+                position: "fixed",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                backgroundColor: "#f0f0f0",
+                display: "flex",
+                justifyContent: "space-around",
+                borderTop: "1px solid #ccc",
+            }}>
+                <button onClick={() => addElement("text", "New Text")} style={{ ...buttonStyle, flex: 1, margin: 0, borderRadius: 0 }}>
+                    Add Text
+                </button>
+                <label style={{ ...fileInputLabelStyle, flex: 1, margin: 0, borderRadius: 0 }}>
+                    Add Logo
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            opacity: 0,
+                            width: "100%",
+                            height: "100%",
+                            cursor: "pointer",
+                        }}
+                    />
+                </label>
+                <button onClick={() => addElement("qrcode", "https://example.com")} style={{ ...buttonStyle, flex: 1, margin: 0, borderRadius: 0 }}>
+                    Add QR
+                </button>
+                <button
+                    onClick={() => selectedElement && deleteElement(selectedElement.id)}
+                    style={{ ...buttonStyle, flex: 1, margin: 0, borderRadius: 0, backgroundColor: selectedElement ? "#ff4444" : "#ccc" }}
+                    disabled={!selectedElement}
+                >
+                    Delete
+                </button>
+                <button onClick={sendToBackend} style={{ ...buttonStyle, flex: 1, margin: 0, borderRadius: 0 }}>
+                    Checkout
+                </button>
+            </div>
+        </>
+    );
+
+    const renderDesktopLayout = () => (
+        <>
+            <div style={{
+                display: "flex",
+                justifyContent: "center",
+                padding: "20px",
+                borderBottom: "1px solid #ccc",
+                flexWrap: "wrap",
+            }}>
+                <div onClick={() => loadTemplate("template1")} style={templateButtonStyle}>
+                    <img src={MenuTemplate} alt="Menu template" style={{ width: 100, height: 100, borderRadius: "50%" }} />
+                    <span>Menu template</span>
+                </div>
+                <div onClick={() => loadTemplate("template3")} style={templateButtonStyle}>
+                    <img src={ReviewTemplate} alt="Review template" style={{ width: 100, height: 100, borderRadius: "50%" }} />
                     <span>Review template</span>
                 </div>
                 <div onClick={() => loadTemplate("template2")} style={templateButtonStyle}>
@@ -611,22 +884,22 @@ export function ReactStickerDesigner() {
                         Add Text
                     </button>
                     <label style={fileInputLabelStyle}>
-                    Add Logo (Max 5MB)
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileUpload}
-                        style={{
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                            opacity: 0,
-                            width: "100%",
-                            height: "100%",
-                            cursor: "pointer",
-                        }}
-                    />
-                </label>
+                        Add Logo (Max 5MB)
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileUpload}
+                            style={{
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                opacity: 0,
+                                width: "100%",
+                                height: "100%",
+                                cursor: "pointer",
+                            }}
+                        />
+                    </label>
                     <button onClick={() => addElement("qrcode", "https://example.com")} style={buttonStyle}>
                         Add QR Code
                     </button>
@@ -639,97 +912,10 @@ export function ReactStickerDesigner() {
                             style={{ ...inputStyle, padding: 0, border: "none" }}
                         />
                     </div>
-                    {selectedElement && (
-                        <div style={{ marginTop: 20 }}>
-                            <h4 style={{ marginBottom: 10, textAlign: "center" }}>Element Properties</h4>
-                            {selectedElement.type === "text" && (
-                                <>
-                                    <label style={{ display: "block", textAlign: "left" }}>Text Content</label>
-                                    <input
-                                        type="text"
-                                        value={selectedElement.content}
-                                        onChange={(e) => updateElement(selectedElement.id, { content: e.target.value })}
-                                        style={inputStyle}
-                                    />
-                                    <label style={{ display: "block", marginTop: 10, textAlign: "left" }}>Text Color</label>
-                                    <input
-                                        type="color"
-                                        value={selectedElement.color}
-                                        onChange={(e) => updateElement(selectedElement.id, { color: e.target.value })}
-                                        style={{ ...inputStyle, padding: 0, border: "none" }}
-                                    />
-                                    <label style={{ display: "block", marginTop: 10, textAlign: "left" }}>Font Size</label>
-                                    <input
-                                        type="number"
-                                        value={selectedElement.fontSize}
-                                        onChange={(e) => {
-                                            const newSize = Math.max(1, parseInt(e.target.value) || 1);
-                                            updateElement(selectedElement.id, { fontSize: newSize });
-                                        }}
-                                        style={inputStyle}
-                                    />
-                                    <label style={{ display: "block", marginTop: 10, textAlign: "left"}}>Font Family</label>
-                                    <select
-                                        value={selectedElement.fontFamily}
-                                        onChange={(e) => updateElement(selectedElement.id, { fontFamily: e.target.value })}
-                                        style={inputStyle}
-                                    >
-                                        {fonts.map((font) => (
-                                            <option key={font} value={font}>{font}</option>
-                                        ))}
-                                    </select>
-                                    <label style={{ display: "block", marginTop: 10, textAlign: "left"}}>Font Weight</label>
-                                    <select
-                                        value={selectedElement.fontWeight || 'normal'}
-                                        onChange={(e) => updateElement(selectedElement.id, { fontWeight: e.target.value })}
-                                        style={inputStyle}
-                                    >
-                                        <option value="normal">Normal</option>
-                                        <option value="bold">Bold</option>
-                                    </select>
-                                </>
-                            )}
-                            {selectedElement.type === "logo" && (
-                                <>
-                                    <label style={{ display: "block", marginBottom: 5, textAlign: "left" }}>Logo Size</label>
-                                    <input
-                                        type="number"
-                                        value={selectedElement.width}
-                                        onChange={(e) => updateElement(selectedElement.id, {
-                                            width: Number(e.target.value),
-                                            height: Number(e.target.value),
-                                        })}
-                                        style={inputStyle}
-                                    />
-                                </>
-                            )}
-                            {selectedElement.type === "qrcode" && (
-                                <>
-                                    <label style={{ display: "block", marginBottom: 5, textAlign: "left" }}>QR Code Content</label>
-                                    <input
-                                        type="text"
-                                        value={selectedElement.content}
-                                        onChange={(e) => updateElement(selectedElement.id, { content: e.target.value })}
-                                        style={inputStyle}
-                                        placeholder="QR Code content"
-                                    />
-                                </>
-                            )}
-                            <button
-                                onClick={() => deleteElement(selectedElement.id)}
-                                style={{
-                                    ...buttonStyle,
-                                    backgroundColor: "#ff4444",
-                                    marginTop: 20,
-                                }}
-                            >
-                                Delete Element
-                            </button>
-                        </div>
-                    )}
                     <button onClick={sendToBackend} style={buttonStyle}>
                         Continue to Checkout
                     </button>
+                    {selectedElement && renderElementProperties()}
                 </div>
                 <div style={{
                     flex: 1,
@@ -743,8 +929,8 @@ export function ReactStickerDesigner() {
                         ref={containerRef}
                         style={{
                             position: "relative",
-                            width: circleDiameter * fixedZoom,
-                            height: circleDiameter * fixedZoom,
+                            width: circleDiameter * zoom,
+                            height: circleDiameter * zoom,
                         }}
                     >
                         <div style={{
@@ -764,7 +950,7 @@ export function ReactStickerDesigner() {
                                     isSelected={selectedElement && selectedElement.id === element.id}
                                     circleDiameter={circleDiameter}
                                     renderCanvas={renderCanvas}
-                                    zoom={fixedZoom}
+                                    zoom={zoom}
                                 />
                             ))}
                         </div>
@@ -777,6 +963,17 @@ export function ReactStickerDesigner() {
                     </div>
                 </div>
             </div>
+        </>
+    );
+
+    return (
+        <div style={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100vh",
+            fontFamily: "Arial, sans-serif",
+        }}>
+            {isMobile ? renderMobileLayout() : renderDesktopLayout()}
             {isDialogOpen && (
                 <div style={{
                     position: 'fixed',
@@ -812,7 +1009,7 @@ export function ReactStickerDesigner() {
                                     />
                                 </div>
                             ))}
-                <button 
+                            <button 
                                 onClick={handleFormSubmit}
                                 style={{
                                     ...buttonStyle,
@@ -842,49 +1039,59 @@ function DraggableElement({
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
     const [isEditing, setIsEditing] = useState(false);
 
-    const handleMouseDown = (e) => {
+    const handleStart = (e) => {
         if (!isEditing) {
             setIsDragging(true);
-            setDragStart({ x: e.clientX / zoom - element.x, y: e.clientY / zoom - element.y });
+            const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+            const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+            setDragStart({ x: clientX / zoom - element.x, y: clientY / zoom - element.y });
         }
     };
 
-    const handleMouseMove = useCallback((e) => {
+    const handleMove = useCallback((e) => {
         if (isDragging) {
-            const newX = Math.max(0, Math.min(e.clientX / zoom - dragStart.x, circleDiameter - element.width));
-            const newY = Math.max(0, Math.min(e.clientY / zoom - dragStart.y, circleDiameter - element.height));
+            const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+            const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+            const newX = Math.max(0, Math.min(clientX / zoom - dragStart.x, circleDiameter - element.width));
+            const newY = Math.max(0, Math.min(clientY / zoom - dragStart.y, circleDiameter - element.height));
             updateElement(element.id, { x: newX, y: newY });
             renderCanvas();
         }
     }, [isDragging, dragStart, element, updateElement, circleDiameter, renderCanvas, zoom]);
 
-    const handleMouseUp = useCallback(() => {
+    const handleEnd = useCallback(() => {
         setIsDragging(false);
     }, []);
 
     useEffect(() => {
         if (isDragging) {
-            document.addEventListener("mousemove", handleMouseMove);
-            document.addEventListener("mouseup", handleMouseUp);
+            document.addEventListener("mousemove", handleMove);
+            document.addEventListener("mouseup", handleEnd);
+            document.addEventListener("touchmove", handleMove);
+            document.addEventListener("touchend", handleEnd);
         }
         return () => {
-            document.removeEventListener("mousemove", handleMouseMove);
-            document.removeEventListener("mouseup", handleMouseUp);
+            document.removeEventListener("mousemove", handleMove);
+            document.removeEventListener("mouseup", handleEnd);
+            document.removeEventListener("touchmove", handleMove);
+            document.removeEventListener("touchend", handleEnd);
         };
-    }, [isDragging, handleMouseMove, handleMouseUp]);
+    }, [isDragging, handleMove, handleEnd]);
 
     const handleResize = (e, corner) => {
         e.stopPropagation();
-        const startX = e.clientX;
-        const startY = e.clientY;
+        const startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+        const startY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
         const startWidth = element.width;
         const startHeight = element.height;
 
-        const handleMouseMove = (moveEvent) => {
-            const deltaX = (moveEvent.clientX - startX) / zoom;
-            const deltaY = (moveEvent.clientY - startY) / zoom;
+        const handleResizeMove = (moveEvent) => {
+            const clientX = moveEvent.type.includes('mouse') ? moveEvent.clientX : moveEvent.touches[0].clientX;
+            const clientY = moveEvent.type.includes('mouse') ? moveEvent.clientY : moveEvent.touches[0].clientY;
+            const deltaX = (clientX - startX) / zoom;
+            const deltaY = (clientY - startY) / zoom;
             let newWidth, newHeight, newX = element.x, newY = element.y;
-        
+
             switch (corner) {
                 case "topLeft":
                     newWidth = Math.max(20, startWidth - deltaX);
@@ -906,24 +1113,25 @@ function DraggableElement({
                     newWidth = Math.min(Math.max(20, startWidth + deltaX), circleDiameter - element.x);
                     newHeight = Math.min(Math.max(20, startHeight + deltaY), circleDiameter - element.y);
                     break;
-                default:
-                    console.warn(`Unexpected corner value: ${corner}`);
-                    return; // Exit the function without updating
             }
-        
+
             updateElement(element.id, { width: newWidth, height: newHeight, x: newX, y: newY });
             renderCanvas();
         };
-    
-        const handleMouseUp = () => {
-            document.removeEventListener("mousemove", handleMouseMove);
-            document.removeEventListener("mouseup", handleMouseUp);
+
+        const handleResizeEnd = () => {
+            document.removeEventListener("mousemove", handleResizeMove);
+            document.removeEventListener("mouseup", handleResizeEnd);
+            document.removeEventListener("touchmove", handleResizeMove);
+            document.removeEventListener("touchend", handleResizeEnd);
         };
-    
-        document.addEventListener("mousemove", handleMouseMove);
-        document.addEventListener("mouseup", handleMouseUp);
+
+        document.addEventListener("mousemove", handleResizeMove);
+        document.addEventListener("mouseup", handleResizeEnd);
+        document.addEventListener("touchmove", handleResizeMove);
+        document.addEventListener("touchend", handleResizeEnd);
     };
-    
+
     const commonStyle = {
         width: "100%",
         height: "100%",
@@ -940,7 +1148,7 @@ function DraggableElement({
         border: "none",
         userSelect: "none",
     };
-    
+
     const commonTextStyle = {
         ...commonStyle,
         fontFamily: element.fontFamily,
@@ -948,10 +1156,11 @@ function DraggableElement({
         color: element.color,
         fontWeight: element.fontWeight || 'normal',
     };
-    
+
     return (
         <div
-            onMouseDown={handleMouseDown}
+            onMouseDown={handleStart}
+            onTouchStart={handleStart}
             style={{
                 position: "absolute",
                 top: element.y * zoom,
@@ -1009,10 +1218,10 @@ function DraggableElement({
             )}
             {isSelected && (
                 <>
-                    <div style={{ ...resizeHandleStyle, top: -5, left: -5, cursor: "nwse-resize" }} onMouseDown={(e) => handleResize(e, "topLeft")} />
-                    <div style={{ ...resizeHandleStyle, top: -5, right: -5, cursor: "nesw-resize" }} onMouseDown={(e) => handleResize(e, "topRight")} />
-                    <div style={{ ...resizeHandleStyle, bottom: -5, left: -5, cursor: "nesw-resize" }} onMouseDown={(e) => handleResize(e, "bottomLeft")} />
-                    <div style={{ ...resizeHandleStyle, bottom: -5, right: -5, cursor: "nwse-resize" }} onMouseDown={(e) => handleResize(e, "bottomRight")} />
+                    <div style={{ ...resizeHandleStyle, top: -10, left: -10, cursor: "nwse-resize" }} onMouseDown={(e) => handleResize(e, "topLeft")} onTouchStart={(e) => handleResize(e, "topLeft")} />
+                    <div style={{ ...resizeHandleStyle, top: -10, right: -10, cursor: "nesw-resize" }} onMouseDown={(e) => handleResize(e, "topRight")} onTouchStart={(e) => handleResize(e, "topRight")} />
+                    <div style={{ ...resizeHandleStyle, bottom: -10, left: -10, cursor: "nesw-resize" }} onMouseDown={(e) => handleResize(e, "bottomLeft")} onTouchStart={(e) => handleResize(e, "bottomLeft")} />
+                    <div style={{ ...resizeHandleStyle, bottom: -10, right: -10, cursor: "nwse-resize" }} onMouseDown={(e) => handleResize(e, "bottomRight")} onTouchStart={(e) => handleResize(e, "bottomRight")} />
                 </>
             )}
         </div>
