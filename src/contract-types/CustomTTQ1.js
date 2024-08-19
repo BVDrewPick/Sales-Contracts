@@ -450,7 +450,7 @@ export function ReactStickerDesigner() {
         if (file) {
             if (file.size > 5 * 1024 * 1024) {
                 alert("File size exceeds 5MB limit. Please choose a smaller file.");
-                e.target.value = '';
+                e.target.value= '';
                 return;
             }
 
@@ -1038,37 +1038,47 @@ function DraggableElement({
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
     const [isEditing, setIsEditing] = useState(false);
+    const elementRef = useRef(null);
 
     const handleStart = (e) => {
         if (!isEditing) {
+            e.preventDefault(); // Prevent default touch behavior
             setIsDragging(true);
             const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
             const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
-            setDragStart({ x: clientX / zoom - element.x, y: clientY / zoom - element.y });
+            const rect = elementRef.current.getBoundingClientRect();
+            setDragStart({
+                x: (clientX - rect.left) / zoom,
+                y: (clientY - rect.top) / zoom
+            });
+            setSelectedElement(element);
         }
     };
 
     const handleMove = useCallback((e) => {
         if (isDragging) {
+            e.preventDefault(); // Prevent default touch behavior
             const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
             const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
-            const newX = Math.max(0, Math.min(clientX / zoom - dragStart.x, circleDiameter - element.width));
-            const newY = Math.max(0, Math.min(clientY / zoom - dragStart.y, circleDiameter - element.height));
+            const rect = elementRef.current.parentElement.getBoundingClientRect();
+            const newX = Math.max(0, Math.min((clientX - rect.left) / zoom - dragStart.x, circleDiameter - element.width));
+            const newY = Math.max(0, Math.min((clientY - rect.top) / zoom - dragStart.y, circleDiameter - element.height));
             updateElement(element.id, { x: newX, y: newY });
             renderCanvas();
         }
     }, [isDragging, dragStart, element, updateElement, circleDiameter, renderCanvas, zoom]);
 
-    const handleEnd = useCallback(() => {
+    const handleEnd = useCallback((e) => {
+        e.preventDefault(); // Prevent default touch behavior
         setIsDragging(false);
     }, []);
 
     useEffect(() => {
         if (isDragging) {
-            document.addEventListener("mousemove", handleMove);
-            document.addEventListener("mouseup", handleEnd);
-            document.addEventListener("touchmove", handleMove);
-            document.addEventListener("touchend", handleEnd);
+            document.addEventListener("mousemove", handleMove, { passive: false });
+            document.addEventListener("mouseup", handleEnd, { passive: false });
+            document.addEventListener("touchmove", handleMove, { passive: false });
+            document.addEventListener("touchend", handleEnd, { passive: false });
         }
         return () => {
             document.removeEventListener("mousemove", handleMove);
@@ -1077,7 +1087,6 @@ function DraggableElement({
             document.removeEventListener("touchend", handleEnd);
         };
     }, [isDragging, handleMove, handleEnd]);
-
 
     const handleResize = (e, corner) => {
         e.stopPropagation();
@@ -1115,7 +1124,6 @@ function DraggableElement({
                     newHeight = Math.min(Math.max(20, startHeight + deltaY), circleDiameter - element.y);
                     break;
                 default:
-                    // If an unexpected corner is provided, do not resize
                     console.warn(`Unexpected resize corner: ${corner}`);
                     return;
             }
@@ -1164,6 +1172,7 @@ function DraggableElement({
 
     return (
         <div
+            ref={elementRef}
             onMouseDown={handleStart}
             onTouchStart={handleStart}
             style={{
@@ -1175,8 +1184,8 @@ function DraggableElement({
                 padding: 0,
                 width: element.width * zoom,
                 height: element.height * zoom,
+                touchAction: "none", // Disable browser touch actions
             }}
-            onClick={() => setSelectedElement(element)}
         >
             {element.type === "text" && (
                 isEditing ? (
