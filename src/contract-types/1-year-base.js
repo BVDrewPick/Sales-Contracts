@@ -4,7 +4,6 @@ import { BVLogo } from '../Images/ImageRepository';
 
 const OneYearBase = () => {
   const [formData, setFormData] = useState({
-    contractTerm: 'BlueVerse Access 1-Year',
     processingFee: '3%',
     tableTechCost: '20',
     customerName: '',
@@ -151,14 +150,8 @@ const OneYearBase = () => {
     }
   };
 
-  const getTermsOfServiceLink = (contractTerm) => {
-    if (contractTerm === 'BlueVerse Access 1-Year') {
-      return 'https://docs.google.com/document/d/e/2PACX-1vRbxJaaE_ijGbyGv24WtwhtVlFsDMK3puYRuy9eQQEWdlh3dmkD4Dh7zAeBfLdsnbrKjOzrs_l2__n_/pub';
-    } else if (contractTerm === 'BlueVerse Access 2-Year') {
-      return 'https://docs.google.com/document/d/e/2PACX-1vS_K3etw5LsuPyDwHuedCQrrx40ZncMhNNoxS4Ax9gJY5urNAskKmMWzOAUTaytwOoZUTaHUUCof18X/pub';
-    } else {
-      return '#';
-    }
+  const getTermsOfServiceLink = () => {
+    return 'https://docs.google.com/document/d/e/2PACX-1vRbxJaaE_ijGbyGv24WtwhtVlFsDMK3puYRuy9eQQEWdlh3dmkD4Dh7zAeBfLdsnbrKjOzrs_l2__n_/pub';
   };
 
   const containerStyle = {
@@ -231,20 +224,6 @@ const OneYearBase = () => {
       <p>Account Information</p>
       <form onSubmit={handleSubmit}>
         <div style={formGroupStyle}>
-          <label htmlFor="contractTerm" style={labelStyle}>Contract Term</label>
-          <select
-            id="contractTerm"
-            name="contractTerm"
-            value={formData.contractTerm}
-            onChange={handleChange}
-            required
-            style={selectStyle}
-          >
-            <option value="BlueVerse Access 1-Year">BlueVerse Access 1-Year</option>
-            <option value="BlueVerse Access 2-Year">BlueVerse Access 2-Year</option>
-          </select>
-        </div>
-        <div style={formGroupStyle}>
           <label htmlFor="locations" style={labelStyle}>Locations</label>
           <p style={descriptionStyle}>Select the number of locations.</p>
           <select
@@ -289,7 +268,7 @@ const OneYearBase = () => {
           />
         </div>
         {Object.keys(formData).map((key) => (
-          key !== 'contractTerm' && key !== 'processingFee' && key !== 'tableTechCost' && key !== 'locations' && key !== 'billingAddress' && key !== 'customerSiteAddress' && key !== 'tableTechQuantity' && key !== 'subscriptionFee' && key !== 'implementationFee' && key !== 'sameAddress' && key !== 'isChecked' && key !== 'customerName' && key !== 'businessName' && key !== 'contactName' && key !== 'customerTitle' && (
+          key !== 'processingFee' && key !== 'tableTechCost' && key !== 'locations' && key !== 'billingAddress' && key !== 'customerSiteAddress' && key !== 'tableTechQuantity' && key !== 'subscriptionFee' && key !== 'implementationFee' && key !== 'sameAddress' && key !== 'isChecked' && key !== 'customerName' && key !== 'businessName' && key !== 'contactName' && key !== 'customerTitle' && (
             <div style={formGroupStyle} key={key}>
               <label htmlFor={key} style={labelStyle}>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
               <p style={descriptionStyle}>
@@ -396,7 +375,7 @@ const OneYearBase = () => {
               checked={formData.isChecked}
               onChange={handleChange}
               required
-            /> I Agree to The <a href={getTermsOfServiceLink(formData.contractTerm)} target="_blank" rel="noopener noreferrer">Terms of Service</a>
+            /> I Agree to The <a href={getTermsOfServiceLink()} target="_blank" rel="noopener noreferrer">Terms of Service</a>
           </label>
         </div>
         <div style={formGroupStyle}>

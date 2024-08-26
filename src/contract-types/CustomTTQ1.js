@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { MenuTemplate, GenericLogoTemplate, ReviewTemplate, FiveStar } from '../Images/ImageRepository';
+import { MenuTemplate, GenericLogoTemplate, ReviewTemplate, FiveStar, Trashcan, Text, QRCodeButton, ImageButton, CheckoutCart } from '../Images/ImageRepository';
 
 const buttonStyle = {
     padding: "10px 15px",
@@ -450,7 +450,7 @@ export function ReactStickerDesigner() {
         if (file) {
             if (file.size > 5 * 1024 * 1024) {
                 alert("File size exceeds 5MB limit. Please choose a smaller file.");
-                e.target.value= '';
+                e.target.value = '';
                 return;
             }
 
@@ -630,8 +630,8 @@ export function ReactStickerDesigner() {
             padding: 0,
             border: "none",
             ...(isMobile ? {
-                width: "60px",  // Increased width for mobile
-                height: "40px", // Increased height for mobile
+                width: "60px",
+                height: "40px",
             } : {}),
         };
     
@@ -723,7 +723,6 @@ export function ReactStickerDesigner() {
             </div>
         );
     };
-    
 
     const renderMobileLayout = () => (
         <>
@@ -807,12 +806,13 @@ export function ReactStickerDesigner() {
                 display: "flex",
                 justifyContent: "space-around",
                 borderTop: "1px solid #ccc",
+                padding: "10px 0",
             }}>
-                <button onClick={() => addElement("text", "New Text")} style={{ ...buttonStyle, flex: 1, margin: 0, borderRadius: 0 }}>
-                    Add Text
+                <button onClick={() => addElement("text", "New Text")} style={mobileButtonStyle}>
+                    <img src={Text} alt="Add Text" style={mobileButtonImageStyle} />
                 </button>
-                <label style={{ ...fileInputLabelStyle, flex: 1, margin: 0, borderRadius: 0 }}>
-                    Add Logo
+                <label style={mobileButtonStyle}>
+                    <img src={ImageButton} alt="Add Logo" style={mobileButtonImageStyle} />
                     <input
                         type="file"
                         accept="image/*"
@@ -828,18 +828,21 @@ export function ReactStickerDesigner() {
                         }}
                     />
                 </label>
-                <button onClick={() => addElement("qrcode", "https://example.com")} style={{ ...buttonStyle, flex: 1, margin: 0, borderRadius: 0 }}>
-                    Add QR
+                <button onClick={() => addElement("qrcode", "https://example.com")} style={mobileButtonStyle}>
+                    <img src={QRCodeButton} alt="Add QR" style={mobileButtonImageStyle} />
                 </button>
                 <button
                     onClick={() => selectedElement && deleteElement(selectedElement.id)}
-                    style={{ ...buttonStyle, flex: 1, margin: 0, borderRadius: 0, backgroundColor: selectedElement ? "#ff4444" : "#ccc" }}
+                    style={{
+                        ...mobileButtonStyle,
+                        opacity: selectedElement ? 1 : 0.5,
+                    }}
                     disabled={!selectedElement}
                 >
-                    Delete
+                    <img src={Trashcan} alt="Delete" style={mobileButtonImageStyle} />
                 </button>
-                <button onClick={sendToBackend} style={{ ...buttonStyle, flex: 1, margin: 0, borderRadius: 0 }}>
-                    Checkout
+                <button onClick={sendToBackend} style={mobileButtonStyle}>
+                    <img src={CheckoutCart} alt="Checkout" style={mobileButtonImageStyle} />
                 </button>
             </div>
         </>
@@ -857,7 +860,7 @@ export function ReactStickerDesigner() {
                 <div onClick={() => loadTemplate("template1")} style={templateButtonStyle}>
                     <img src={MenuTemplate} alt="Menu template" style={{ width: 100, height: 100, borderRadius: "50%" }} />
                     <span>Menu template</span>
-                </div>
+                    </div>
                 <div onClick={() => loadTemplate("template3")} style={templateButtonStyle}>
                     <img src={ReviewTemplate} alt="Review template" style={{ width: 100, height: 100, borderRadius: "50%" }} />
                     <span>Review template</span>
@@ -966,6 +969,24 @@ export function ReactStickerDesigner() {
         </>
     );
 
+    const mobileButtonStyle = {
+        background: "transparent",
+        border: "none",
+        padding: 0,
+        margin: 0,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        cursor: "pointer",
+        position: "relative",
+        width: "20%",
+    };
+
+    const mobileButtonImageStyle = {
+        width: "30px",
+        height: "30px",
+    };
+
     return (
         <div style={{
             display: "flex",
@@ -1042,7 +1063,7 @@ function DraggableElement({
 
     const handleStart = (e) => {
         if (!isEditing) {
-            e.preventDefault(); // Prevent default touch behavior
+            e.preventDefault();
             setIsDragging(true);
             const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
             const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
@@ -1057,7 +1078,7 @@ function DraggableElement({
 
     const handleMove = useCallback((e) => {
         if (isDragging) {
-            e.preventDefault(); // Prevent default touch behavior
+            e.preventDefault();
             const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
             const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
             const rect = elementRef.current.parentElement.getBoundingClientRect();
@@ -1069,7 +1090,7 @@ function DraggableElement({
     }, [isDragging, dragStart, element, updateElement, circleDiameter, renderCanvas, zoom]);
 
     const handleEnd = useCallback((e) => {
-        e.preventDefault(); // Prevent default touch behavior
+        e.preventDefault();
         setIsDragging(false);
     }, []);
 
@@ -1184,7 +1205,7 @@ function DraggableElement({
                 padding: 0,
                 width: element.width * zoom,
                 height: element.height * zoom,
-                touchAction: "none", // Disable browser touch actions
+                touchAction: "none",
             }}
         >
             {element.type === "text" && (

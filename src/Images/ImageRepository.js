@@ -15,8 +15,12 @@ import GenericLogoTemplate from './content/GenericLogoTemplate.png'
 import MenuTemplate from './content/MenuTemplate.png'
 import ReviewTemplate from './content/ReviewTemplate.png'
 import FiveStar from './content/5Star.png'
-
+import Trashcan from './content/Trash.png'
+import Text from './content/Text.png'
+import QRCodeButton from './content/Qr.png'
+import ImageButton from './content/Image.png'
+import CheckoutCart from './content/Checkout.png'
 
 export {Base1YearOF, BVLogo, POSButton, POSButtonTableNumber, CallServer, CheckIn, dealWithTableNumber, dealsWithOutTableNumber,
 InstagramFollow, Menu, scootersMenu, OrderHere, ReviewUs, GenericLogoTemplate, MenuTemplate, ReviewTemplate
-, FiveStar};
+, FiveStar, Trashcan, Text, QRCodeButton, ImageButton, CheckoutCart};
