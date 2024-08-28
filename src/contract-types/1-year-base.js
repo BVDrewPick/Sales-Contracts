@@ -151,7 +151,7 @@ const OneYearBase = () => {
   };
 
   const getTermsOfServiceLink = () => {
-    return 'https://docs.google.com/document/d/e/2PACX-1vRbxJaaE_ijGbyGv24WtwhtVlFsDMK3puYRuy9eQQEWdlh3dmkD4Dh7zAeBfLdsnbrKjOzrs_l2__n_/pub';
+    return 'https://docs.google.com/document/u/1/d/e/2PACX-1vQpfqdtJiJ0MImFOOMOupjvEbQxxde-4SgKi8CFrvL3ndrHTg7fav45DmJi46rriabhA6Mhu1iMR1Vg/pub';
   };
 
   const containerStyle = {
