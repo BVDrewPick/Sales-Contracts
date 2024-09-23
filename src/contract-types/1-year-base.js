@@ -117,26 +117,26 @@ const OneYearBase = () => {
       switch (formData.locations) {
         case '1 Location':
           redirectUrl = tableTechQuantity === 1 
-            ? 'https://buy.stripe.com/fZe00Nd4wgHI01O01G' 
-            : 'https://buy.stripe.com/6oE00N5C4crsaGseWB';
+            ? 'https://www.blueverse.club/' 
+            : 'https://www.blueverse.club/';
           break;
         case '2 Locations':
           redirectUrl = tableTechQuantity === 1 
-            ? 'https://buy.stripe.com/9AQ7tf0hKfDE9Co01J' 
-            : 'https://buy.stripe.com/3csfZL7KcezA6qccOu';
+            ? 'https://www.blueverse.club/' 
+            : 'https://www.blueverse.club/';
           break;
         case '3 Locations':
           redirectUrl = tableTechQuantity === 1 
-            ? 'https://buy.stripe.com/7sI9Bn7KcgHI9Cog0I' 
-            : 'https://buy.stripe.com/aEUaFrggIcrsdSEbKt';
+            ? 'https://www.blueverse.club/' 
+            : 'https://www.blueverse.club/';
           break;
         case '4 Locations':
           redirectUrl = tableTechQuantity === 1 
-            ? 'https://buy.stripe.com/3cs5l7aWogHIg0MbKw' 
-            : 'https://buy.stripe.com/bIY28V8Ogajk29W9Cp';
+            ? 'https://www.blueverse.club/' 
+            : 'https://www.blueverse.club/';
           break;
         case '5+ Locations':
-          redirectUrl = 'https://buy.stripe.com/6oE7tf4y0bno3e0g04';
+          redirectUrl = 'https://www.blueverse.club/';
           break;
         default:
           console.error('Unknown location');
